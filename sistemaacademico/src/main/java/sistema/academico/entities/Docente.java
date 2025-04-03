@@ -1,7 +1,7 @@
 package sistema.academico.entities;
 import jakarta.persistence.*;
 import lombok.*;
-
+// YO
 @Entity
 @Data
 @NoArgsConstructor

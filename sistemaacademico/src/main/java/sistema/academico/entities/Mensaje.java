@@ -3,7 +3,7 @@ package sistema.academico.entities;
 import java.util.Date;
 import jakarta.persistence.*;
 import lombok.*;
-
+// YO
 @Entity
 @Data
 @NoArgsConstructor
@@ -16,4 +16,5 @@ public class Mensaje {
     private Usuario destinatario;
     private String contenido;
     private Date fechaEnvio;
+    private boolean leido;
 }

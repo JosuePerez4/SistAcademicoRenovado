@@ -22,6 +22,4 @@ public class Curso {
     private Clase clase;
     private Calificacion calificacion;
     private Estudiante estudiante;
-
-
 }
