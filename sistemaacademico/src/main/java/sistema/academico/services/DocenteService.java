@@ -2,11 +2,13 @@ package sistema.academico.services;
 
 import java.util.Optional;
 
+import org.jvnet.hk2.annotations.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import sistema.academico.entities.Docente;
 import sistema.academico.repository.DocenteRepository;
 
+@Service
 public class DocenteService {
     
     @Autowired

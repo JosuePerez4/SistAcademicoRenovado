@@ -3,7 +3,7 @@ package sistema.academico.entities;
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
-
+// YO
 @Entity
 @Data
 @NoArgsConstructor
