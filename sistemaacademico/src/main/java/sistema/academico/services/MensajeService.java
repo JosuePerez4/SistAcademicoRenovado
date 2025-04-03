@@ -3,11 +3,13 @@ package sistema.academico.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import sistema.academico.entities.Mensaje;
 import sistema.academico.entities.Usuario;
 import sistema.academico.repository.MensajeRepository;
 
+@Service
 public class MensajeService {
     
     @Autowired
