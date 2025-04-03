@@ -2,7 +2,6 @@ package sistema.academico.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import sistema.academico.Materia;
 
 @Entity
 @Data
