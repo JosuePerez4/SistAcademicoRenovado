@@ -17,5 +17,6 @@ public class Estudiante {
     private Date fechaIngreso;
     private Date fechaEgreso;
     private Curso curso;
+
 }
 

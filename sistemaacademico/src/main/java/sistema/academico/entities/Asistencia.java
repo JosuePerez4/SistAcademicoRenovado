@@ -16,5 +16,5 @@ public class Asistencia {
     private Estado estado;
     private Estudiante estudiante;
     private Date fecha;
-}
 
+}

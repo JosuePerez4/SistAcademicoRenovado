@@ -3,6 +3,8 @@ package sistema.academico.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -20,5 +22,4 @@ public class Curso {
     private Clase clase;
     private Calificacion calificacion;
     private Estudiante estudiante;
-    private Docente docente;
 }
