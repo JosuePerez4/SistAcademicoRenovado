@@ -12,10 +12,10 @@ public class HistorialAcademico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    Estudiante estudiante;
-    List<Calificacion> calificaciones;
-    List<Curso> cursosAprobados;
-    List<Curso> cursosReprobados;
-    float promedioGeneral;
-    int creditosAcumulados;
+    private Estudiante estudiante;
+    private List<Calificacion> calificaciones;
+    private List<Curso> cursosAprobados;
+    private List<Curso> cursosReprobados;
+    private float promedioGeneral;
+    private int creditosAcumulados;
 }

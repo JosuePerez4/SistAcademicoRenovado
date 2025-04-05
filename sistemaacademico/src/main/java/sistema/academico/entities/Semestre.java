@@ -13,8 +13,8 @@ public class Semestre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    String nombre;
-    Date fechaInicio;
-    Date fechaFin;
-    List<Materia> materias;
+    private String nombre;
+    private Date fechaInicio;
+    private Date fechaFin;
+    private List<Materia> materias;
 }
