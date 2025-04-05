@@ -1,7 +1,19 @@
 package sistema.academico.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -10,15 +22,28 @@ import lombok.*;
 public class Curso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
     private Long id;
+    @Column(name="nombre")
     private String nombre;
+    @Column(name="descripcion")
     private String descripcion;
+    @Column(name="codigo")
     private String codigo;
+    @Column(name="materia")
     private Materia materia;
+    @Column(name="cupo_maximo")
     private int cupoMaximo;
+    @Column(name="semestre")
     private int semestre;
-    private Clase clase;
-    private Calificacion calificacion;
-    private Estudiante estudiante;
-    private Docente docente;
+
+    @OneToMany(mappedBy = "curso")
+    private List<Clase> clases;
+    @ManyToMany
+@JoinTable(
+    name = "curso_estudiante",
+    joinColumns = @JoinColumn(name = "curso_id"),
+    inverseJoinColumns = @JoinColumn(name = "estudiante_id")
+)
+private List<Estudiante> estudiantes;
 }
