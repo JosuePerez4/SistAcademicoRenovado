@@ -11,11 +11,11 @@ import java.util.*;
 
 @Service
 public class DocenteService {
-    
+
     @Autowired
     private DocenteRepository docenteRepository;
 
-     // Registrar Docente
+    // Registrar Docente
     public Docente registrarDocente(Docente docente) {
         return docenteRepository.save(docente);
     }
@@ -37,11 +37,14 @@ public class DocenteService {
         }
     }
 
-    /*  Crear Evaluación ---- Dudando si este método va aquí, ya que no es responsabilidad de la clase docente crear esa evaluación
-    public void crearEvaluacion(Evaluacion evaluacion) {
-        // Aquí podrías usar un repositorio para evaluaciones si lo tienes
-        System.out.println("Evaluación creada: " + evaluacion.getTitulo());
-    }*/
+    /*
+     * Crear Evaluación ---- Dudando si este método va aquí, ya que no es
+     * responsabilidad de la clase docente crear esa evaluación
+     * public void crearEvaluacion(Evaluacion evaluacion) {
+     * // Aquí podrías usar un repositorio para evaluaciones si lo tienes
+     * System.out.println("Evaluación creada: " + evaluacion.getTitulo());
+     * }
+     */
 
     // Obtener un Docente por ID
     public Optional<Docente> obtenerDocentePorId(Long id) {
