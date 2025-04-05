@@ -2,21 +2,26 @@ package sistema.academico.entities;
 import java.util.Date;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Estudiante {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Estudiante extends Usuario {
+
     private String programaAcademico;
     private float promedio;
     private boolean beca;
-    private Date fechaIngreso;
-    private Date fechaEgreso;
-    private Curso curso;
 
+    @Temporal(TemporalType.DATE)
+    private Date fechaIngreso;
+
+    @Temporal(TemporalType.DATE)
+    private Date fechaEgreso;
+
+    @ManyToMany(mappedBy = "estudiantes")
+    private List<Curso> cursos;
 }
+
 
