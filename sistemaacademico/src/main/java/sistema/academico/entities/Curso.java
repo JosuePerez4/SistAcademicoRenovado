@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,28 +23,26 @@ import lombok.NoArgsConstructor;
 public class Curso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
-    @Column(name="nombre")
+    @Column(name = "nombre")
     private String nombre;
-    @Column(name="descripcion")
+    @Column(name = "descripcion")
     private String descripcion;
-    @Column(name="codigo")
+    @Column(name = "codigo")
     private String codigo;
-    @Column(name="materia")
+    @ManyToOne
+    @JoinColumn(name = "materia_id")
     private Materia materia;
-    @Column(name="cupo_maximo")
+
+    @Column(name = "cupo_maximo")
     private int cupoMaximo;
-    @Column(name="semestre")
+    @Column(name = "semestre")
     private int semestre;
 
     @OneToMany(mappedBy = "curso")
     private List<Clase> clases;
     @ManyToMany
-@JoinTable(
-    name = "curso_estudiante",
-    joinColumns = @JoinColumn(name = "curso_id"),
-    inverseJoinColumns = @JoinColumn(name = "estudiante_id")
-)
-private List<Estudiante> estudiantes;
+    @JoinTable(name = "curso_estudiante", joinColumns = @JoinColumn(name = "curso_id"), inverseJoinColumns = @JoinColumn(name = "estudiante_id"))
+    private List<Estudiante> estudiantes;
 }
