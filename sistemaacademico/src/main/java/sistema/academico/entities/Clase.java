@@ -14,6 +14,12 @@ public class Clase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date fecha;
-    private Horario horario;
+
+    @ManyToOne
+    private Horario horario; // Relación con Horario
+
+    @ManyToOne
+    private Curso curso; // Relación con Curso
+    
     private Asistencia asistencia;
 }
