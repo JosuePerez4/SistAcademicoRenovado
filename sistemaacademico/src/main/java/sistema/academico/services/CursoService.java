@@ -19,11 +19,11 @@ public class CursoService {
 
     // Crear un curso
     public Curso crearCurso(Curso curso) {
-        if (curso.getClase() == null) {
-            curso.setClase(new ArrayList<>());
+        if (curso.getClases() == null) {
+            curso.setClases(new ArrayList<>());
         }
-        if (curso.getEstudiante() == null) {
-            curso.setEstudiante(new ArrayList<>());
+        if (curso.getEstudiantes() == null) {
+            curso.setEstudiantes(new ArrayList<>());
         }
         return cursoRepository.save(curso);
     }
@@ -43,11 +43,11 @@ public class CursoService {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
             Curso curso = cursoOpt.get();
-            if (curso.getEstudiante() == null) {
-                curso.setEstudiante(new ArrayList<>());
+            if (curso.getEstudiantes() == null) {
+                curso.setEstudiantes(new ArrayList<>());
             }
-            if (curso.getEstudiante().size() < curso.getCupoMaximo()) {
-                curso.getEstudiante().add(estudiante);
+            if (curso.getEstudiantes().size() < curso.getCupoMaximo()) {
+                curso.getEstudiantes().add(estudiante);
                 cursoRepository.save(curso);
                 return true;
             }
@@ -55,30 +55,28 @@ public class CursoService {
         return false;
     }
 
-    // Agregar un horario al curso
-    public boolean agregarHorario(Long idCurso, Horario horario) {
+    // Agregar una clase al curso
+    public boolean agregarClase(Long idCurso, Clase nuevaClase) {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
             Curso curso = cursoOpt.get();
-            if (curso.getClase() == null) {
-                curso.setClase(new ArrayList<>());
+            if (curso.getClases() == null) {
+                curso.setClases(new ArrayList<>());
             }
-            Clase nuevaClase = new Clase();
-            nuevaClase.setHorario(horario);
-            curso.getClase().add(nuevaClase);
+            curso.getClases().add(nuevaClase);
             cursoRepository.save(curso);
             return true;
         }
         return false;
     }
 
-    // Eliminar un horario del curso
-    public boolean eliminarHorario(Long idCurso, Horario horario) {
+    // Eliminar una clase del curso
+    public boolean eliminarClase(Long idCurso, Clase claseAEliminar) {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
             Curso curso = cursoOpt.get();
-            if (curso.getClase() != null) {
-                curso.getClase().removeIf(clase -> clase.getHorario().equals(horario));
+            if (curso.getClases() != null) {
+                curso.getClases().removeIf(clase -> clase.equals(claseAEliminar));
                 cursoRepository.save(curso);
                 return true;
             }
@@ -89,7 +87,7 @@ public class CursoService {
     // Listar estudiantes inscritos en un curso
     public List<Estudiante> listarEstudiantes(Long idCurso) {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
-        return cursoOpt.map(Curso::getEstudiante).orElse(new ArrayList<>());
+        return cursoOpt.map(Curso::getEstudiantes).orElse(new ArrayList<>());
     }
 
     // Listar horarios de un curso
@@ -97,8 +95,8 @@ public class CursoService {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
             Curso curso = cursoOpt.get();
-            if (curso.getClase() != null) {
-                return curso.getClase().stream()
+            if (curso.getClases() != null) {
+                return curso.getClases().stream()
                         .map(Clase::getHorario)
                         .collect(Collectors.toList());
             }
@@ -111,8 +109,8 @@ public class CursoService {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
             Curso curso = cursoOpt.get();
-            if (curso.getClase() != null) {
-                return curso.getClase().stream()
+            if (curso.getClases() != null) {
+                return curso.getClases().stream()
                         .anyMatch(clase -> clase.getHorario().getDiaSemana().equals(dia) &&
                                 hora.after(clase.getHorario().getHoraInicio()) &&
                                 hora.before(clase.getHorario().getHoraFin()));
