@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -34,6 +36,7 @@ public class Curso {
         joinColumns = @JoinColumn(name = "curso_id"),
         inverseJoinColumns = @JoinColumn(name = "estudiante_id")
     )
+    @JsonBackReference
     private List<Estudiante> estudiantes; // Relación con múltiples estudiantes
 
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
