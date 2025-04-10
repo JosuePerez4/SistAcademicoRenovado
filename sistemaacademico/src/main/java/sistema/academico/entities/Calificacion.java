@@ -1,20 +1,9 @@
 package sistema.academico.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Data
@@ -25,24 +14,15 @@ public class Calificacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "curso_id", nullable = false)
-    private Curso curso;
+    private double nota;
 
     @ManyToOne
-    @JoinColumn(name = "estudiante_id", nullable = false)
-    private Estudiante estudiante;
+    @JoinColumn(name = "inscripcion_id", nullable = false)
+    private Inscripcion inscripcion;
 
-    @Column(name = "nota", nullable = false)
-    private float nota;
-
-    @Column(name = "fecha_registro")
-    @Temporal(TemporalType.DATE)
-    private Date fechaRegistro;
-
-    @Column(name = "tipo_evaluacion")
-    private String tipoEvaluacion;
+    @ManyToOne
+    @JoinColumn(name = "evaluacion_id", nullable = false)
+    private Evaluacion evaluacion;
 }

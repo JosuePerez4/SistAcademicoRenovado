@@ -30,6 +30,7 @@ public class RegistroCalificacionService {
     @Autowired
     private HistorialAcademicoRepository historialAcademicoRepository;
 
+    /* 
     public boolean registrarCalificacion(Long idEstudiante, Long idCurso, float nota, String tipoEvaluacion) {
         Optional<Estudiante> estudianteOpt = estudianteRepository.findById(idEstudiante);
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
@@ -48,7 +49,7 @@ public class RegistroCalificacionService {
             calificacion.setEstudiante(estudiante);
             calificacion.setCurso(curso);
             calificacion.setNota(nota);
-            calificacion.setTipoEvaluacion(tipoEvaluacion);
+            //calificacion.setEvaluacion(tipoEvaluacion);
             calificacion.setFechaRegistro(new Date());
     
             calificacionRepository.save(calificacion);
@@ -72,6 +73,6 @@ public class RegistroCalificacionService {
             return true; // Registro exitoso
         }
         return false; // No se encontró estudiante o curso
-    }
+    }*/
     
 }

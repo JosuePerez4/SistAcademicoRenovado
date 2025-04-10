@@ -38,4 +38,10 @@ public class ProgramaAcademico {
 
     @OneToMany(mappedBy = "programaAcademico", cascade = CascadeType.ALL)
     private Set<Estudiante> estudiantes;
+
+    @OneToMany(mappedBy = "programaAcademico")
+    private Set<Materia> materias;
+
+    @OneToMany(mappedBy = "programa")
+    private Set<Matricula> matriculas;
 }
