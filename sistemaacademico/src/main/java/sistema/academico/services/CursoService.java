@@ -17,7 +17,7 @@ public class CursoService {
     @Autowired
     private CursoRepository cursoRepository;
 
-    // Crear un curso
+    /* Crear un curso
     public Curso crearCurso(Curso curso) {
         if (curso.getClases() == null) {
             curso.setClases(new ArrayList<>());
@@ -26,7 +26,7 @@ public class CursoService {
             curso.setEstudiantes(new ArrayList<>());
         }
         return cursoRepository.save(curso);
-    }
+    }*/
 
     // Modificar un curso
     public Curso modificarCurso(Curso curso) {
@@ -38,7 +38,7 @@ public class CursoService {
         cursoRepository.deleteById(id);
     }
 
-    // Inscribir un estudiante en un curso
+    /* Inscribir un estudiante en un curso
     public boolean inscribirEstudiante(Long idCurso, Estudiante estudiante) {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
@@ -53,9 +53,9 @@ public class CursoService {
             }
         }
         return false;
-    }
+    }*/
 
-    // Agregar una clase al curso
+    /*Agregar una clase al curso
     public boolean agregarClase(Long idCurso, Clase nuevaClase) {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
@@ -68,9 +68,9 @@ public class CursoService {
             return true;
         }
         return false;
-    }
+    }*/
 
-    // Eliminar una clase del curso
+    /*Eliminar una clase del curso
     public boolean eliminarClase(Long idCurso, Clase claseAEliminar) {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
@@ -82,15 +82,15 @@ public class CursoService {
             }
         }
         return false;
-    }
+    }*/
 
-    // Listar estudiantes inscritos en un curso
+    /* Listar estudiantes inscritos en un curso
     public List<Estudiante> listarEstudiantes(Long idCurso) {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         return cursoOpt.map(Curso::getEstudiantes).orElse(new ArrayList<>());
-    }
+    }*/
 
-    // Listar horarios de un curso
+    /*Listar horarios de un curso
     public List<Horario> listarHorarios(Long idCurso) {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
@@ -102,9 +102,9 @@ public class CursoService {
             }
         }
         return new ArrayList<>();
-    }
+    }*/
 
-    // Consultar disponibilidad del curso
+    /*  Consultar disponibilidad del curso
     public boolean consultarDisponibilidad(Long idCurso, String dia, java.sql.Time hora) {
         Optional<Curso> cursoOpt = cursoRepository.findById(idCurso);
         if (cursoOpt.isPresent()) {
@@ -117,5 +117,5 @@ public class CursoService {
             }
         }
         return false;
-    }
+    }*/
 }

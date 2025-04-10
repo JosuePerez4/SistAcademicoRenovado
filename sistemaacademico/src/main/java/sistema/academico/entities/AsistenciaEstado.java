@@ -1,6 +1,6 @@
 package sistema.academico.entities;
 
-public enum Estado {
+public enum AsistenciaEstado {
     PRESENTE,
     AUSENTE,
     JUSTIFICADO
