@@ -74,7 +74,7 @@ public class CalificacionService {
         if (calificacionOpt.isPresent()) {
             Calificacion calificacion = calificacionOpt.get();
             return String.format("Calificación: %s, Nota: %.2f, Fecha de Registro: %s",
-                    calificacion.getEvaluacion(), calificacion.getNota(), calificacion.getFechaRegistro());
+                    calificacion.getEvaluacion(), calificacion.getNota());
         }
         return "Calificación no encontrada";
     }

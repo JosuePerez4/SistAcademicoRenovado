@@ -1,7 +1,5 @@
 package sistema.academico.entities;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.*;
 import lombok.*;
 
