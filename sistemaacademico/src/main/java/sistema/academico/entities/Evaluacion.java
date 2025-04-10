@@ -10,13 +10,14 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "evaluaciones")
+@Table(name = "evaluacion")
 public class Evaluacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String tipo;
+    @Enumerated(EnumType.STRING)
+    private TipoEvaluacion tipo;
     private String descripcion;
     private LocalDate fechaCreacion;
     private LocalDate fechaLimite;
