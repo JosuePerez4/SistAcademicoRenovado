@@ -24,6 +24,10 @@ public class Curso {
     @Column(name = "semestre")
     private int semestre;
 
+    @ManyToOne
+    @JoinColumn(name = "docente_id")
+    private Docente docente;
+
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
     private List<Horario> horarios;
 

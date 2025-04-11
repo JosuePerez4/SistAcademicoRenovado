@@ -27,9 +27,11 @@ public class Mensaje {
 
     @ManyToOne
     @JoinColumn(name = "emisor_id")
-    private Usuario emisor;
+    private Usuario remitente;
 
     @ManyToOne
     @JoinColumn(name = "receptor_id")
-    private Usuario receptor;
+    private Usuario destinatario;
+
+    private boolean leido;
 }

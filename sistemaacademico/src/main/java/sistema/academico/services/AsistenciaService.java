@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import sistema.academico.entities.Asistencia;
-import sistema.academico.entities.AsistenciaEstado;
 import sistema.academico.entities.Estudiante;
+import sistema.academico.enums.AsistenciaEstado;
 import sistema.academico.repository.AsistenciaRepository;
 
 import java.util.Date;

@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import sistema.academico.entities.Curso;
-import sistema.academico.entities.EstadoInscripcion;
-import sistema.academico.entities.EstadoMatricula;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.entities.Matricula;
+import sistema.academico.enums.EstadoInscripcion;
+import sistema.academico.enums.EstadoMatricula;
 import sistema.academico.repository.CursoRepository;
 import sistema.academico.repository.EstudianteRepository;
 import sistema.academico.repository.InscripcionRepository;

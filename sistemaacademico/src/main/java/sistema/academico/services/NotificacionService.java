@@ -18,7 +18,7 @@ public class NotificacionService {
     @Autowired
     private NotificacionRepository notificacionRepository;
 
-    // Crear una nueva notificación
+    /*  Crear una nueva notificación
     public Notificacion crearNotificacion(String destinatario, Mensaje mensaje, Usuario usuarioDestino) {
         Notificacion notificacion = new Notificacion();
         notificacion.setDestinatario(destinatario);
@@ -26,26 +26,11 @@ public class NotificacionService {
         notificacion.setUsuarioDestino(usuarioDestino);
         notificacion.setFechaCreacion(new Date()); // Establecer fecha actual
         return notificacionRepository.save(notificacion);
-    }
+    }*/
 
     // Obtener todas las notificaciones
     public List<Notificacion> obtenerTodasNotificaciones() {
         return notificacionRepository.findAll();
-    }
-
-    // Buscar notificaciones por destinatario
-    public List<Notificacion> buscarPorDestinatario(String destinatario) {
-        return notificacionRepository.findByDestinatario(destinatario);
-    }
-
-    // Buscar notificaciones por usuario destino
-    public List<Notificacion> buscarPorUsuarioDestino(Usuario usuarioDestino) {
-        return notificacionRepository.findByUsuarioDestino(usuarioDestino);
-    }
-
-    // Buscar notificaciones por rango de fechas
-    public List<Notificacion> buscarPorRangoDeFechas(Date inicio, Date fin) {
-        return notificacionRepository.findByFechaCreacionBetween(inicio, fin);
     }
 
     // Enviar notificación (actualizar estado de envío)
@@ -54,8 +39,6 @@ public class NotificacionService {
         if (notificacionOpt.isPresent()) {
             Notificacion notificacion = notificacionOpt.get();
             // Aquí agregarías la lógica real para enviar la notificación (por correo, SMS, etc.)
-            System.out.println("Notificación enviada al destinatario: " + notificacion.getDestinatario());
-            return true;
         }
         return false;
     }

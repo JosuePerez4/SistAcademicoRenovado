@@ -13,6 +13,5 @@ import java.util.List;
 public interface ReporteRepository extends JpaRepository<Reporte, Long> {
     List<Reporte> findByTitulo(String titulo); // Buscar por título
     List<Reporte> findByTipo(String tipo); // Buscar por tipo
-    List<Reporte> findByAutor(Usuario autor); // Buscar por autor
     List<Reporte> findByFechaGeneracionBetween(Date inicio, Date fin); // Búsqueda por rango de fechas
 }
