@@ -17,7 +17,8 @@ public class Asistencia {
     private Long id;
 
     @Column(name = "estado", nullable = false)
-    private String estado; // Puedes cambiarlo por un ENUM si lo manejas así
+    @Enumerated(EnumType.STRING)
+    private AsistenciaEstado estado; // Puedes cambiarlo por un ENUM si lo manejas así
 
     @ManyToOne
     @JoinColumn(name = "estudiante_id", nullable = false)
