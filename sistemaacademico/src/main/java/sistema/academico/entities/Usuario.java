@@ -2,7 +2,7 @@ package sistema.academico.entities;
 
 import java.util.Date;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,21 +19,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-<<<<<<< HEAD
-@Inheritance(strategy = InheritanceType.JOINED)
-=======
 @Table(name="usuario")
->>>>>>> origin/main
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-<<<<<<< HEAD
-=======
     @Column(nullable = false, unique = true)
->>>>>>> origin/main
     private String cedula;
 
     @Column(nullable = false)
