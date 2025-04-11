@@ -1,8 +1,18 @@
 package sistema.academico.entities;
 
 import java.util.Date;
+
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -11,6 +21,7 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name="usuario")
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,7 +42,10 @@ public class Usuario {
     private String telefono;
     @Column(nullable = false, unique = true)
     private String genero;
+
+    @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
+
     private String codigo;
     @Column(nullable = false, unique = true)
     private String contrasena;

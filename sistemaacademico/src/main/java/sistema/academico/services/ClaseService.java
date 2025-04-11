@@ -8,6 +8,7 @@ import sistema.academico.entities.Clase;
 import sistema.academico.entities.Horario;
 import sistema.academico.repository.ClaseRepository;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -43,11 +44,6 @@ public class ClaseService {
         return claseRepository.findByHorario(horario);
     }
 
-    // Buscar clases por asistencia
-    public List<Clase> buscarClasesPorAsistencia(Long asistenciaId) {
-        return claseRepository.findByAsistencia_Id(asistenciaId);
-    }
-
     // Buscar clases por fecha y horario
     public List<Clase> buscarClasesPorFechaYHorario(Date fecha, Horario horario) {
         return claseRepository.findByFechaAndHorario(fecha, horario);
@@ -64,14 +60,15 @@ public class ClaseService {
         return null; // Si la clase no existe
     }
 
-    // Agregar asistencia a una clase
+    // Agregar una asistencia a la clase
     public Clase agregarAsistencia(Long idClase, Asistencia nuevaAsistencia) {
         Optional<Clase> claseOpt = claseRepository.findById(idClase);
         if (claseOpt.isPresent()) {
             Clase clase = claseOpt.get();
-            clase.setAsistencia(nuevaAsistencia); // Vincular asistencia
-            return claseRepository.save(clase);
+            nuevaAsistencia.setClase(clase); // Establece la relación
+            clase.getAsistencias().add(nuevaAsistencia); // Agrega a la lista
+            return claseRepository.save(clase); // Guarda clase con asistencias
         }
-        return null; // Si la clase no existe
+        return null;
     }
 }

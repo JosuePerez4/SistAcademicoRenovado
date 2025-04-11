@@ -8,13 +8,29 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "reporte")
 public class Reporte {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String titulo;
-    private String tipo;
-    private Date fechaGeneracion;
+
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
-    private Usuario autor;
+
+    @Column(name = "tipo")
+    private String tipo;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "fecha_generacion")
+    private Date fechaGeneracion;
+
+    @ManyToOne
+    @JoinColumn(name = "estudiante_id")
+    private Estudiante estudiante;
+
+    @ManyToOne
+    @JoinColumn(name = "docente_id")
+    private Docente docente;
 }
+
