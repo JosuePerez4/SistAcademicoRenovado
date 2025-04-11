@@ -21,6 +21,8 @@ public class Reporte {
     @Column(name = "tipo")
     private String tipo;
 
+    private String titulo;
+
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_generacion")
     private Date fechaGeneracion;
@@ -33,4 +35,3 @@ public class Reporte {
     @JoinColumn(name = "docente_id")
     private Docente docente;
 }
-

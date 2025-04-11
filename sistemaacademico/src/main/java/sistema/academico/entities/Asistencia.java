@@ -1,7 +1,10 @@
 package sistema.academico.entities;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 import lombok.*;
+import sistema.academico.enums.AsistenciaEstado;
 
 import java.util.Date;
 

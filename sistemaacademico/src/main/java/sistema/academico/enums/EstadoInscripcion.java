@@ -1,4 +1,4 @@
-package sistema.academico.entities;
+package sistema.academico.enums;
 
 public enum EstadoInscripcion {
     INSCRITO,

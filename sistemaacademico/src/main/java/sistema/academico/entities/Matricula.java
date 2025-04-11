@@ -2,6 +2,7 @@ package sistema.academico.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import sistema.academico.enums.EstadoMatricula;
 
 import java.time.LocalDate;
 import java.util.List;

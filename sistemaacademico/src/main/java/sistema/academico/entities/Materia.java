@@ -33,5 +33,22 @@ public class Materia {
 
     @OneToMany(mappedBy = "materia")
     private List<Curso> cursos;
-}
 
+    @ManyToOne
+    @JoinColumn(name = "programa_academico_id")
+    private ProgramaAcademico programaAcademico;
+
+    @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL)
+    private List<Tema> temario;
+
+    @ManyToMany
+    @JoinTable(name = "materia_prerrequisitos",
+
+            joinColumns = @JoinColumn(name = "materia_id"),
+
+            inverseJoinColumns = @JoinColumn(name = "prerrequisito_id"))
+    private List<Materia> prerrequisitos;
+
+    @ManyToMany(mappedBy = "prerrequisitos")
+    private List<Materia> materiasQueLaTienenComoPrerrequisito;
+}

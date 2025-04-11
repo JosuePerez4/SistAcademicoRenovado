@@ -1,5 +1,6 @@
 package sistema.academico.entities;
 
+import java.time.LocalDate;
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,10 @@ public class Semestre {
 
     @Column(name = "anio")
     private int anio;
+
+    private LocalDate fechaInicio;
+
+    private LocalDate fechaFin;
 
     @OneToMany(mappedBy = "semestre")
     private List<Materia> materias;
