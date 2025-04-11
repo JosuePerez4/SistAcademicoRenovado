@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import sistema.academico.entities.Asistencia;
-import sistema.academico.entities.AsistenciaEstado;
 import sistema.academico.entities.Estudiante;
+import sistema.academico.enums.AsistenciaEstado;
 
 @Repository
 public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {

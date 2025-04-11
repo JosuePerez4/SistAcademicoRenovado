@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @RestController
 @RequestMapping("api/estudiante")
 @CrossOrigin(origins = "*")
@@ -29,12 +28,10 @@ public class EstudianteController {
     private EstudianteService estudianteService;
 
     // Registrar un estudiante
-    @PostMapping("/registrar") // Para crear
-    // RequestBody recibe los datos del estudiante en el cuerpo de la petición
+    @PostMapping("/registrar")
     public ResponseEntity<Estudiante> registrarEstudiante(@RequestBody Estudiante estudiante) {
-        Estudiante nuevoEstudiante = estudianteService.registrarEstudiante(estudiante);
-        return new ResponseEntity<>(nuevoEstudiante, HttpStatus.CREATED);// HttpStatus.CREATED responde 201, indica que
-                                                                         // se creó correctamente
+        Estudiante nuevo = estudianteService.registrarEstudiante(estudiante);
+        return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
     }
 
     // Actualizar un estudiante

@@ -23,7 +23,6 @@ public class ReporteService {
         reporte.setTitulo(titulo);
         reporte.setTipo(tipo);
         reporte.setDescripcion(descripcion);
-        reporte.setAutor(autor);
         reporte.setFechaGeneracion(new Date()); // Fecha actual
         return reporteRepository.save(reporte);
     }
@@ -41,11 +40,6 @@ public class ReporteService {
     // Buscar reportes por tipo
     public List<Reporte> buscarPorTipo(String tipo) {
         return reporteRepository.findByTipo(tipo);
-    }
-
-    // Buscar reportes por autor
-    public List<Reporte> buscarPorAutor(Usuario autor) {
-        return reporteRepository.findByAutor(autor);
     }
 
     // Buscar reportes por rango de fechas

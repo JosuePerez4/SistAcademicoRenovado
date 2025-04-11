@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import sistema.academico.entities.Curso;
-import sistema.academico.entities.EstadoInscripcion;
-import sistema.academico.entities.EstadoMatricula;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.entities.Matricula;
 import sistema.academico.entities.ProgramaAcademico;
 import sistema.academico.entities.Semestre;
+import sistema.academico.enums.EstadoInscripcion;
+import sistema.academico.enums.EstadoMatricula;
 import sistema.academico.repository.EstudianteRepository;
 import sistema.academico.repository.InscripcionRepository;
 import sistema.academico.repository.MatriculaRepository;
@@ -55,7 +55,7 @@ public class MatriculaService {
     }
 
     @Transactional
-    public boolean matricularEstudiantePrimeraVez(Estudiante estudiante, Semestre semestre,
+    public Matricula matricularEstudiantePrimeraVez(Estudiante estudiante, Semestre semestre,
             ProgramaAcademico programaAcademico) {
 
         if (matriculaRepository.existsByEstudianteAndSemestre(estudiante, semestre)) {
@@ -83,9 +83,7 @@ public class MatriculaService {
         matricula.setEstado(EstadoMatricula.ACTIVA);
         matricula.setInscripciones(new ArrayList<>());
 
-        matriculaRepository.save(matricula);
-
-        return true;
+        return matriculaRepository.save(matricula); // devolvemos la matrícula persistida
     }
 
     @Transactional

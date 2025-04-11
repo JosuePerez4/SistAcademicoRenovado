@@ -9,10 +9,13 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import sistema.academico.entities.Curso;
-import sistema.academico.entities.EstadoInscripcion;
+import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.entities.Matricula;
+import sistema.academico.enums.EstadoInscripcion;
+import sistema.academico.enums.EstadoMatricula;
 import sistema.academico.repository.CursoRepository;
+import sistema.academico.repository.EstudianteRepository;
 import sistema.academico.repository.InscripcionRepository;
 import sistema.academico.repository.MatriculaRepository;
 
@@ -22,10 +25,16 @@ public class InscripcionService {
     private InscripcionRepository inscripcionRepository;
 
     @Autowired
+    private EstudianteRepository estudianteRepository;
+
+    @Autowired
     private MatriculaRepository matriculaRepository;
 
     @Autowired
     private CursoRepository cursoRepository;
+
+    @Autowired
+    private CursoService cursoService;
 
     @Transactional
     public Inscripcion inscribirEstudianteEnCurso(Long matriculaId, Long cursoId) {
@@ -121,6 +130,32 @@ public class InscripcionService {
         return inscripcionRepository.findByMatriculaIdAndCursoId(matriculaId, cursoId)
                 .map(Inscripcion::getNotaFinal)
                 .orElse(null);
+    }
+
+    @Transactional
+    public Inscripcion inscribirEstudianteEnMateria(Long estudianteId, Long materiaId) {
+        Estudiante estudiante = estudianteRepository.findById(estudianteId)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        Matricula matricula = matriculaRepository
+                .findByEstudianteIdAndEstado(estudianteId, EstadoMatricula.ACTIVA)
+                .orElseThrow(() -> new RuntimeException("No hay matrícula activa para el estudiante"));
+
+        List<Curso> cursosDisponibles = cursoService.obtenerCursosDisponiblesPorMateria(materiaId);
+
+        if (cursosDisponibles.isEmpty()) {
+            throw new RuntimeException("No hay cupo disponible para esta materia");
+        }
+
+        Curso curso = cursosDisponibles.get(0); // Simple: asignar al primero con cupo
+
+        Inscripcion inscripcion = new Inscripcion();
+        inscripcion.setCurso(curso);
+        inscripcion.setMatricula(matricula);
+        inscripcion.setFechaInscripcion(LocalDate.now());
+        inscripcion.setEstado(EstadoInscripcion.INSCRITO);
+
+        return inscripcionRepository.save(inscripcion);
     }
 
 }

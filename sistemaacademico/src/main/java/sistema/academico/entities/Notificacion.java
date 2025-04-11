@@ -8,12 +8,27 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "notificacion")
 public class Notificacion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String destinatario;
-    private Mensaje mensaje;
-    private Date fechaCreacion;
-    private Usuario usuarioDestino;
+
+    @Column(name = "titulo")
+    private String titulo;
+
+    @Column(name = "mensaje", columnDefinition = "TEXT")
+    private String mensaje;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "fecha")
+    private Date fecha;
+
+    @Column(name = "leida")
+    private boolean leida;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 }
