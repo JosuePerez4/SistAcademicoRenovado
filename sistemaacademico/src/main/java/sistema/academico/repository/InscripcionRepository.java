@@ -22,4 +22,6 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Long> 
     long countByCursoIdAndEstado(Long cursoId, EstadoInscripcion estado);
 
     Optional<Inscripcion> findByMatriculaIdAndCursoId(Long matriculaId, Long cursoId);
+
+    
 }
