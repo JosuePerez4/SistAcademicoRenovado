@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import sistema.academico.entities.Asistencia;
-import sistema.academico.entities.Estado;
+import sistema.academico.entities.AsistenciaEstado;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.repository.AsistenciaRepository;
 
@@ -28,7 +28,7 @@ public class AsistenciaService {
     }
 
     // Buscar asistencias por estado
-    public List<Asistencia> buscarPorEstado(Estado estado) {
+    public List<Asistencia> buscarPorEstado(AsistenciaEstado estado) {
         return asistenciaRepository.findByEstado(estado);
     }
 
@@ -44,13 +44,13 @@ public class AsistenciaService {
 
     // Generar un reporte de inasistencias
     public String generarReporteInasistencias() {
-        List<Asistencia> inasistencias = asistenciaRepository.findByEstado(Estado.AUSENTE);
+        List<Asistencia> inasistencias = asistenciaRepository.findByEstado(AsistenciaEstado.AUSENTE);
         return "Reporte de Inasistencias: " + inasistencias.size() + " inasistencias registradas.";
     }
 
     // Generar un reporte de asistencias
     public String generarReporteAsistencias() {
-        List<Asistencia> asistencias = asistenciaRepository.findByEstado(Estado.PRESENTE);
+        List<Asistencia> asistencias = asistenciaRepository.findByEstado(AsistenciaEstado.PRESENTE);
         return "Reporte de Asistencias: " + asistencias.size() + " asistencias registradas.";
     }
 }

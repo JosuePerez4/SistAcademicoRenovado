@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import sistema.academico.entities.Materia;
+import sistema.academico.entities.Tema;
 import sistema.academico.repository.MateriaRepository;
 
 @Service
@@ -80,7 +81,7 @@ public class MateriaService {
     }
 
     // Obtener temas de una materia
-    public List<String> obtenerTemas(Long idMateria) {
+    public List<Tema> obtenerTemas(Long idMateria) {
         Optional<Materia> materiaOpt = materiaRepository.findById(idMateria);
         return materiaOpt.map(Materia::getTemario).orElseThrow(() -> new RuntimeException("Materia no encontrada"));
     }

@@ -16,5 +16,7 @@ public class Horario {
     private Time horaInicio;
     private Time horaFin;
     private String aula;
+    @ManyToOne
+    @JoinColumn(name = "curso_id")
+    private Curso curso;
 }
-

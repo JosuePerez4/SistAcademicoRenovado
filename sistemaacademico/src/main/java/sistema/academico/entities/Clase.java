@@ -29,13 +29,10 @@ public class Clase {
     private Date fecha;
 
     @ManyToOne
-    @JoinColumn(name = "curso_id", nullable = false)
-    private Curso curso;
+    private Horario horario; // Relación con Horario
 
     @ManyToOne
-    @JoinColumn(name = "horario_id")
-    private Horario horario;
-
-    @OneToMany(mappedBy = "clase")
-    private List<Asistencia> asistencias;
+    private Curso curso; // Relación con Curso
+    
+    private Asistencia asistencia;
 }

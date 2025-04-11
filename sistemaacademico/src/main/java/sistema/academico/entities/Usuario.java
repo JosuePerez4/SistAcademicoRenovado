@@ -15,28 +15,46 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+<<<<<<< HEAD
 @Inheritance(strategy = InheritanceType.JOINED)
+=======
+@Table(name="usuario")
+>>>>>>> origin/main
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+<<<<<<< HEAD
+=======
+    @Column(nullable = false, unique = true)
+>>>>>>> origin/main
     private String cedula;
+
+    @Column(nullable = false)
     private String nombre;
+
+    @Column(nullable = false, unique = true)
     private String apellido;
     private String direccion;
+
+    @Column(nullable = false, unique = true)
     private String correo;
+
     private String telefono;
+    @Column(nullable = false, unique = true)
     private String genero;
 
     @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
 
     private String codigo;
+    @Column(nullable = false, unique = true)
     private String contrasena;
     private boolean estado;
     private String rol;
