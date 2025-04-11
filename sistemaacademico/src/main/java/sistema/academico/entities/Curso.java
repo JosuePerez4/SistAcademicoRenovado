@@ -13,12 +13,15 @@ public class Curso {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
-
     private String nombre;
+    @Column(name = "descripcion")
     private String descripcion;
+    @Column(name = "codigo")
     private String codigo;
     private int cupoMaximo;
+    @Column(name = "semestre")
     private int semestre;
 
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
