@@ -4,9 +4,11 @@ import lombok.*;
 // YO
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Docente {
+@Table(name="docente")
+public class Docente extends Usuario{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

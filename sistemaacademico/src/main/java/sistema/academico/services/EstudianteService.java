@@ -28,7 +28,6 @@ public class EstudianteService {
             Estudiante estudiante = optionalEStudiante.get();
 
             estudiante.setBeca(estudianteActualizado.isBeca());
-            estudiante.setCursos(estudianteActualizado.getCursos());
             estudiante.setFechaEgreso(estudianteActualizado.getFechaEgreso());
             estudiante.setFechaIngreso(estudianteActualizado.getFechaIngreso());
             estudiante.setProgramaAcademico(estudianteActualizado.getProgramaAcademico());

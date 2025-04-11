@@ -1,6 +1,6 @@
 package sistema.academico.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,7 +14,7 @@ public class Semestre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
-    private Date fechaInicio;
-    private Date fechaFin;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
     private List<Materia> materias;
 }
