@@ -3,7 +3,7 @@ package sistema.academico.services;
 import java.sql.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import sistema.academico.entities.Horario;
 import sistema.academico.repository.HorarioRepository;
 
@@ -31,4 +31,11 @@ public class HorarioService {
     public String obtenerDetalles(Horario horario) {
         return null;
     }
+
+     // Listar horarios por curso
+     public List<Horario> listarHorariosPorCurso(Long cursoId) {
+        return horarioRepository.findByCursoId(cursoId);
+    }
+
+
 }

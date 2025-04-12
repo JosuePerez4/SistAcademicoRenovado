@@ -13,4 +13,5 @@ import sistema.academico.entities.Horario;
 public interface HorarioRepository extends JpaRepository<Horario, Long> {
     Optional<Horario> findByDiaSemanaAndHoraInicioAndAula(String diaSemana, Time horaInicio, String aula);
     List<Horario> findByAula(String aula);
+    List<Horario> findByCursoId(Long cursoId);
 }
