@@ -18,6 +18,6 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
     List<Curso> findBySemestre(int semestre);
     List<Curso> findByMateriaId(Long materiaId);
     List<Curso> findByCupoMaximoLessThanEqual(int cupoMaximo); // Buscar cursos con cupo disponible
-    
+    List<Curso> findByDocenteIsNull();
 }
 
