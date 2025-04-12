@@ -1,50 +1,36 @@
+
 package sistema.academico.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sistema.academico.entities.Curso;
+import sistema.academico.repository.*;
 
-import sistema.academico.entities.*;
-import sistema.academico.repository.CursoRepository;
-import sistema.academico.repository.InscripcionRepository;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @Service
 public class CursoService {
-
-    private final InscripcionRepository inscripcionRepository;
 
     @Autowired
     private CursoRepository cursoRepository;
 
-    CursoService(InscripcionRepository inscripcionRepository) {
-        this.inscripcionRepository = inscripcionRepository;
+    public Curso crearCurso(Curso curso) {
+        return cursoRepository.save(curso);
     }
 
-    /*
-     * Crear un curso
-     * public Curso crearCurso(Curso curso) {
-     * if (curso.getClases() == null) {
-     * curso.setClases(new ArrayList<>());
-     * }
-     * if (curso.getEstudiantes() == null) {
-     * curso.setEstudiantes(new ArrayList<>());
-     * }
-     * return cursoRepository.save(curso);
-     * }
-     */
-
-    // Modificar un curso
     public Curso modificarCurso(Curso curso) {
         return cursoRepository.save(curso);
     }
 
-    // Eliminar un curso por ID
     public void eliminarCurso(Long id) {
         cursoRepository.deleteById(id);
+    }
+
+    public List<Curso> listarCursosPorMateria(Long materiaId) {
+        return cursoRepository.findByMateriaId(materiaId);
+    }
+
+    public List<Curso> listarTodosLosCursos() {
+        return cursoRepository.findAll();
     }
 
     public List<Curso> obtenerCursosDisponiblesPorMateria(Long materiaId) {
@@ -148,4 +134,5 @@ public class CursoService {
      * return false;
      * }
      */
+
 }
