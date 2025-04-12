@@ -32,6 +32,9 @@ public class Docente extends Usuario {
 
     @OneToMany(mappedBy = "docente")
     private List<Curso> cursos;
+
+    
+
 }
 
 

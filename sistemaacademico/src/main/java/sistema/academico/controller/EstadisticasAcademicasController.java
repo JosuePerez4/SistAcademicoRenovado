@@ -39,4 +39,16 @@ public class EstadisticasAcademicasController {
         long totalInscritos = estadisticasAcademicasService.contarTotalCursosInscritosEstudiante(estudianteId);
         return ResponseEntity.ok(totalInscritos);
     }
+
+    @GetMapping("/estudiante/{estudianteId}/promedio-proyectado")
+    public ResponseEntity<Double> proyectarPromedioProximoSemestre(@PathVariable Long estudianteId) {
+        double promedioProyectado = estadisticasAcademicasService.proyectarPromedioProximoSemestre(estudianteId);
+        return ResponseEntity.ok(promedioProyectado);
+    }
+
+    @GetMapping("/estudiante/{estudianteId}/en-riesgo")
+    public ResponseEntity<Boolean> estaEstudianteEnRiesgo(@PathVariable Long estudianteId) {
+        boolean enRiesgo = estadisticasAcademicasService.estaEstudianteEnRiesgo(estudianteId);
+        return ResponseEntity.ok(enRiesgo);
+    }
 }
