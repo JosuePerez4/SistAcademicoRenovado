@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import sistema.academico.enums.AsistenciaEstado;
 
-import java.util.Date;
 
 @Entity
 @Data
@@ -27,8 +26,7 @@ public class Asistencia {
     @JoinColumn(name = "estudiante_id", nullable = false)
     private Estudiante estudiante;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "fecha", nullable = false)
-    private Date fecha;
+    private LocalDate fecha;
 }
 

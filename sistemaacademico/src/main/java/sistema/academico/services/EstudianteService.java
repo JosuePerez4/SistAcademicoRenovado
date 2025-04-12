@@ -57,4 +57,13 @@ public class EstudianteService {
     public List<Estudiante> obtenerTodos() {
         return estudianteRepository.findAll();
     }
+
+    // Buscar el estudiante por su código
+    public Estudiante buscarPorCodigo(String codigo) {
+        Optional<Estudiante> estudiante = estudianteRepository.findByCodigo(codigo);
+
+        Estudiante estudianteEncontrao = estudiante.get();
+
+        return estudianteEncontrao;
+    }
 }
