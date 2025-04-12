@@ -1,56 +1,49 @@
 package sistema.academico.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import sistema.academico.entities.Docente;
+import sistema.academico.DTO.DocenteRequestDTO;
+import sistema.academico.DTO.DocenteResponseDTO;
 import sistema.academico.services.DocenteService;
 
-import java.util.Optional;
 import java.util.List;
 
 @RestController
 @RequestMapping("/docentes")
+@RequiredArgsConstructor
 public class DocenteController {
 
     private final DocenteService docenteService;
 
-    public DocenteController(DocenteService docenteService) {
-        this.docenteService = docenteService;
+    @PostMapping("/{usuarioId}")
+    public ResponseEntity<DocenteResponseDTO> crearDocente(
+            @PathVariable Long usuarioId,
+            @RequestBody DocenteRequestDTO dto) {
+        return new ResponseEntity<>(docenteService.registrarDocente(usuarioId, dto), HttpStatus.CREATED);
     }
 
-    // Endpoint para registrar un docente
-    @PostMapping
-    public ResponseEntity<Docente> registrarDocente(@RequestBody Docente docente) {
-        Docente nuevoDocente = docenteService.registrarDocente(docente);
-        return ResponseEntity.ok(nuevoDocente);
-    }
-
-    // Endpoint para actualizar un docente
     @PutMapping("/{id}")
-    public ResponseEntity<Docente> actualizarDocente(@PathVariable Long id, @RequestBody Docente docente) {
-        docente.setId(id); // Asegurar que el ID se mantiene
-        Docente actualizado = docenteService.actualizarDocente(docente);
-        return ResponseEntity.ok(actualizado);
+    public ResponseEntity<DocenteResponseDTO> actualizarDocente(
+            @PathVariable Long id,
+            @RequestBody DocenteRequestDTO dto) {
+        return ResponseEntity.ok(docenteService.actualizarDocente(id, dto));
     }
 
-    // Endpoint para eliminar un docente
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarDocente(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarDocente(@PathVariable Long id) {
         docenteService.eliminarDocente(id);
-        return ResponseEntity.ok("Docente eliminado correctamente");
+        return ResponseEntity.noContent().build();
     }
 
-    // Endpoint para obtener un docente por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Docente> obtenerDocentePorId(@PathVariable Long id) {
-        Optional<Docente> docente = docenteService.obtenerDocentePorId(id);
-        return docente.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<DocenteResponseDTO> obtenerDocente(@PathVariable Long id) {
+        return ResponseEntity.ok(docenteService.obtenerDocentePorId(id));
     }
 
-    // Endpoint para obtener todos los docentes
     @GetMapping
-    public ResponseEntity<List<Docente>> obtenerTodosLosDocentes() {
+    public ResponseEntity<List<DocenteResponseDTO>> obtenerTodos() {
         return ResponseEntity.ok(docenteService.obtenerTodosLosDocentes());
     }
 }

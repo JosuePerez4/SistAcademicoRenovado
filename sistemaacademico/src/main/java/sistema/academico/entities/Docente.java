@@ -30,18 +30,6 @@ public class Docente extends Usuario {
     @Column(name = "tipo_contrato")
     private String tipoContrato;
 
-    @Column(name = "direccion")
-    private String direccion;
-
-    @Column(name = "telefono")
-    private String telefono;
-
-    @Column(name = "cedula", unique = true)
-    private String cedula;
-
-    @Column(name = "fecha_nacimiento")
-    private LocalDate fechaNacimiento;
-
     @OneToMany(mappedBy = "docente")
     private List<Curso> cursos;
 }
