@@ -111,15 +111,6 @@ public class MatriculaService {
         return true;
     }
 
-    public double calcularPromedio(long matriculaId) {
-        List<Inscripcion> inscripciones = inscripcionRepository.findByMatriculaId(matriculaId);
-        return inscripciones.stream()
-                .filter(i -> i.getNotaFinal() != null)
-                .mapToDouble(Inscripcion::getNotaFinal)
-                .average()
-                .orElse(0.0);
-    }
-
     public long contarCursosAprobados(long matriculaId) {
         List<Inscripcion> inscripciones = inscripcionRepository.findByMatriculaId(matriculaId);
         return inscripciones.stream()
