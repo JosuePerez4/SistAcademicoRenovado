@@ -1,5 +1,6 @@
 package sistema.academico.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import sistema.academico.DTO.EstudianteRequestDTO;
+import sistema.academico.DTO.EstudianteResponseDTO;
 import sistema.academico.DTO.EstudianteUpdateDTO;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.ProgramaAcademico;
@@ -64,12 +66,10 @@ public class EstudianteController {
         return new ResponseEntity<>(guardado, HttpStatus.CREATED);
     }
 
-    // Actualizar un estudiante
-    @PutMapping("actualizar/{codigo}") // Para actualizar
+    @PutMapping("actualizar/{codigo}")
     public ResponseEntity<?> actualizarEstudiante(@PathVariable String codigo,
             @RequestBody EstudianteUpdateDTO estudianteActualizado) {
 
-        // Buscar y verificar si el estudiante que queremos actualizar existe
         Estudiante estudianteEncontrao = estudianteService.buscarPorCodigo(codigo);
 
         if (estudianteEncontrao != null) {
@@ -81,7 +81,10 @@ public class EstudianteController {
             estudianteEncontrao.setEstado(estudianteActualizado.isEstado());
             estudianteEncontrao.setBeca(estudianteActualizado.isBeca());
             estudianteEncontrao.setFechaEgreso(estudianteActualizado.getFechaEgreso());
-            return ResponseEntity.ok(estudianteEncontrao);
+
+            Estudiante actualizado = estudianteService.registrarEstudiante(estudianteEncontrao);
+
+            return ResponseEntity.ok(actualizado);
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -90,7 +93,7 @@ public class EstudianteController {
 
     // Eliminar un estudiante
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<String> eliminarEstudiante(@PathVariable long idEstudiante) {
+    public ResponseEntity<String> eliminarEstudiante(@PathVariable("id") long idEstudiante) {
 
         boolean eliminado = estudianteService.eliminarEstudiante(idEstudiante);
         if (eliminado) {
@@ -101,17 +104,64 @@ public class EstudianteController {
 
     // Obtener un estudiante por id
     @GetMapping("/obtener/{id}")
-    public ResponseEntity<Estudiante> obtenerEstudiante(@PathVariable long idEstudiante) {
-        Optional<Estudiante> estudiante = estudianteService.obtenerEstudiantePorId(idEstudiante);
+    public ResponseEntity<EstudianteResponseDTO> obtenerEstudiante(@PathVariable long id) {
+        Optional<Estudiante> estudianteOp = estudianteService.obtenerEstudiantePorId(id);
 
-        return estudiante.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(404).build());
+        if (estudianteOp.isPresent()) {
+            Estudiante estudiante = estudianteOp.get();
+            EstudianteResponseDTO dto = new EstudianteResponseDTO();
+            dto.setId(estudiante.getId());
+            dto.setCedula(estudiante.getCedula());
+            dto.setNombre(estudiante.getNombre());
+            dto.setApellido(estudiante.getApellido());
+            dto.setDireccion(estudiante.getDireccion());
+            dto.setCorreo(estudiante.getCorreo());
+            dto.setTelefono(estudiante.getTelefono());
+            dto.setGenero(estudiante.getGenero());
+            dto.setFechaNacimiento(estudiante.getFechaNacimiento().toString());
+            dto.setCodigo(estudiante.getCodigo());
+            dto.setEstado(estudiante.isEstado());
+            dto.setRol(estudiante.getRol());
+            dto.setPromedio(estudiante.getPromedio());
+            dto.setBeca(estudiante.isBeca());
+            dto.setFechaIngreso(estudiante.getFechaIngreso().toString());
+            dto.setFechaEgreso(estudiante.getFechaEgreso() != null ? estudiante.getFechaEgreso().toString() : null);
+
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    // Obtener todos los estudiantes
     @GetMapping("/obtenerTodos")
-    public List<Estudiante> obtenerEstudiantes() {
+    public ResponseEntity<List<EstudianteResponseDTO>> obtenerEstudiantes() {
         List<Estudiante> estudiantes = estudianteService.obtenerTodos();
-        return estudiantes;
+
+        List<EstudianteResponseDTO> respuesta = new ArrayList<>();
+
+        for (Estudiante estudiante : estudiantes) {
+            EstudianteResponseDTO dto = new EstudianteResponseDTO();
+            dto.setId(estudiante.getId());
+            dto.setCedula(estudiante.getCedula());
+            dto.setNombre(estudiante.getNombre());
+            dto.setApellido(estudiante.getApellido());
+            dto.setDireccion(estudiante.getDireccion());
+            dto.setCorreo(estudiante.getCorreo());
+            dto.setTelefono(estudiante.getTelefono());
+            dto.setGenero(estudiante.getGenero());
+            dto.setFechaNacimiento(estudiante.getFechaNacimiento().toString());
+            dto.setCodigo(estudiante.getCodigo());
+            dto.setEstado(estudiante.isEstado());
+            dto.setRol(estudiante.getRol());
+            dto.setPromedio(estudiante.getPromedio());
+            dto.setBeca(estudiante.isBeca());
+            dto.setFechaIngreso(estudiante.getFechaIngreso().toString());
+            dto.setFechaEgreso(estudiante.getFechaEgreso() != null ? estudiante.getFechaEgreso().toString() : null);
+
+            respuesta.add(dto);
+        }
+
+        return ResponseEntity.ok(respuesta);
     }
+
 }

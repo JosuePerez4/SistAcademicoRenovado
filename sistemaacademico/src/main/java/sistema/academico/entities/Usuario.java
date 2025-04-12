@@ -30,7 +30,7 @@ public class Usuario {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String apellido;
     private String direccion;
 
@@ -38,13 +38,13 @@ public class Usuario {
     private String correo;
 
     private String telefono;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String genero;
 
     private LocalDate fechaNacimiento;
 
     private String codigo;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String contrasena;
     private boolean estado;
     private String rol;
