@@ -18,8 +18,6 @@ import sistema.academico.DTO.EstudianteUpdateDTO;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.ProgramaAcademico;
 import sistema.academico.repository.ProgramaAcademicoRepository;
-import sistema.academico.entities.ProgramaAcademico;
-import sistema.academico.repository.ProgramaAcademicoRepository;
 import sistema.academico.services.EstudianteService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
