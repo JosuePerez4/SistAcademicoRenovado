@@ -1,12 +1,22 @@
 
 package sistema.academico.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sistema.academico.entities.Curso;
 import sistema.academico.repository.*;
 
+import sistema.academico.entities.*;
+import sistema.academico.repository.CursoRepository;
+import sistema.academico.repository.InscripcionRepository;
+
+
+
+
 import java.util.List;
+
 @Service
 public class CursoService {
 
