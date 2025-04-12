@@ -59,11 +59,6 @@ public class MatriculaController {
         return matriculaService.matricularEstudiante(estudianteId, semestreId, cursoIds);
     }
 
-    @GetMapping("/{id}/promedio")
-    public double calcularPromedio(@PathVariable Long id) {
-        return matriculaService.calcularPromedio(id);
-    }
-
     @GetMapping("/{id}/cursos-aprobados")
     public long contarCursosAprobados(@PathVariable Long id) {
         return matriculaService.contarCursosAprobados(id);
