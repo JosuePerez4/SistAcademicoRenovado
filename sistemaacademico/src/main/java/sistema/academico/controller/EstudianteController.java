@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import sistema.academico.DTO.EstudianteRequestDTO;
+import sistema.academico.DTO.EstudianteUpdateDTO;
 import sistema.academico.entities.Estudiante;
+import sistema.academico.entities.ProgramaAcademico;
+import sistema.academico.repository.ProgramaAcademicoRepository;
 import sistema.academico.services.EstudianteService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,21 +31,61 @@ public class EstudianteController {
     @Autowired
     private EstudianteService estudianteService;
 
-    // Registrar un estudiante
+    @Autowired
+    private ProgramaAcademicoRepository programaAcademicoRepository;
+
+    // Crear un estudiante
     @PostMapping("/registrar")
-    public ResponseEntity<Estudiante> registrarEstudiante(@RequestBody Estudiante estudiante) {
-        Estudiante nuevo = estudianteService.registrarEstudiante(estudiante);
-        return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
+    public ResponseEntity<Estudiante> registrarEstudiante(@RequestBody EstudianteRequestDTO dto) {
+        ProgramaAcademico programa = programaAcademicoRepository
+                .findById(dto.getProgramaAcademicoId())
+                .orElseThrow(() -> new RuntimeException("Programa académico no encontrado"));
+
+        Estudiante estudiante = new Estudiante();
+        estudiante.setCedula(dto.getCedula());
+        estudiante.setNombre(dto.getNombre());
+        estudiante.setApellido(dto.getApellido());
+        estudiante.setDireccion(dto.getDireccion());
+        estudiante.setCorreo(dto.getCorreo());
+        estudiante.setTelefono(dto.getTelefono());
+        estudiante.setGenero(dto.getGenero());
+        estudiante.setFechaNacimiento(dto.getFechaNacimiento());
+        estudiante.setCodigo(dto.getCodigo());
+        estudiante.setContrasena(dto.getContrasena());
+        estudiante.setEstado(dto.isEstado());
+        estudiante.setRol(dto.getRol());
+        estudiante.setPromedio(dto.getPromedio());
+        estudiante.setBeca(dto.isBeca());
+        estudiante.setFechaIngreso(dto.getFechaIngreso());
+        estudiante.setFechaEgreso(dto.getFechaEgreso());
+        estudiante.setProgramaAcademico(programa);
+
+        Estudiante guardado = estudianteService.registrarEstudiante(estudiante);
+        return new ResponseEntity<>(guardado, HttpStatus.CREATED);
     }
 
     // Actualizar un estudiante
     @PutMapping("actualizar/{codigo}") // Para actualizar
-    public ResponseEntity<Estudiante> actualizarEstudiante(
-            @PathVariable String codigo,
-            @RequestBody Estudiante estudianteActualizado) {
+    public ResponseEntity<?> actualizarEstudiante(@PathVariable String codigo,
+            @RequestBody EstudianteUpdateDTO estudianteActualizado) {
 
-        Estudiante estudiante = estudianteService.actualizarEstudiante(codigo, estudianteActualizado);
-        return ResponseEntity.ok(estudiante);
+        // Buscar y verificar si el estudiante que queremos actualizar existe
+        Estudiante estudianteEncontrao = estudianteService.buscarPorCodigo(codigo);
+
+        if (estudianteEncontrao != null) {
+            estudianteEncontrao.setNombre(estudianteActualizado.getNombre());
+            estudianteEncontrao.setApellido(estudianteActualizado.getApellido());
+            estudianteEncontrao.setDireccion(estudianteActualizado.getDireccion());
+            estudianteEncontrao.setCorreo(estudianteActualizado.getCorreo());
+            estudianteEncontrao.setTelefono(estudianteActualizado.getTelefono());
+            estudianteEncontrao.setEstado(estudianteActualizado.isEstado());
+            estudianteEncontrao.setBeca(estudianteActualizado.isBeca());
+            estudianteEncontrao.setFechaEgreso(estudianteActualizado.getFechaEgreso());
+            return ResponseEntity.ok(estudianteEncontrao);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("El estudiante con el código " + codigo + " no fue encontrado y no se pudo actualizar.");
     }
 
     // Eliminar un estudiante

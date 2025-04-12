@@ -1,6 +1,6 @@
 package sistema.academico.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
@@ -8,8 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,8 +41,7 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String genero;
 
-    @Temporal(TemporalType.DATE)
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
 
     private String codigo;
     @Column(nullable = false, unique = true)

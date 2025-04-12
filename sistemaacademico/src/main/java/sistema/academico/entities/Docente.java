@@ -2,12 +2,14 @@ package sistema.academico.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Date;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @Table(name = "docente")
 @PrimaryKeyJoinColumn(name = "usuario_id")
@@ -38,8 +40,7 @@ public class Docente extends Usuario {
     private String cedula;
 
     @Column(name = "fecha_nacimiento")
-    @Temporal(TemporalType.DATE)
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
 
     @OneToMany(mappedBy = "docente")
     private List<Curso> cursos;

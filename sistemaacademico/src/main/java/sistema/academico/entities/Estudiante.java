@@ -1,6 +1,6 @@
 package sistema.academico.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,10 +16,10 @@ public class Estudiante extends Usuario{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private float promedio;
+    private double promedio;
     private boolean beca;
-    private Date fechaIngreso;
-    private Date fechaEgreso;
+    private LocalDate fechaIngreso;
+    private LocalDate fechaEgreso;
 
     @ManyToOne
     @JoinColumn(name = "programa_academico_id")
