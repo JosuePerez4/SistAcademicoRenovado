@@ -41,8 +41,24 @@ public class Docente extends Usuario {
     @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
 
+    @Transient
+    public List<Horario> getHorarios() {
+        return cursos != null
+            ? cursos.stream()
+                    .flatMap(curso -> curso.getHorarios().stream())
+                    .toList()
+            : List.of();
+    }
+
     @OneToMany(mappedBy = "docente")
     private List<Curso> cursos;
+
+    
+    @OneToMany(mappedBy = "docente")
+    private List<Curso> cursos;
+    
+    
+    
 }
 
 
