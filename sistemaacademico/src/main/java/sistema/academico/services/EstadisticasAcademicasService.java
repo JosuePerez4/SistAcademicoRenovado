@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.repository.InscripcionRepository;
 

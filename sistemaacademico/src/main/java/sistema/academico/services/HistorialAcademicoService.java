@@ -29,6 +29,6 @@ public class HistorialAcademicoService {
     }
 
     // Método privado para recalcular el promedio y créditos
-    private void recalcularPromedioYCreditos(HistorialAcademico historial) {
-    }
+    /*private void recalcularPromedioYCreditos(HistorialAcademico historial) {
+    }*/
 }

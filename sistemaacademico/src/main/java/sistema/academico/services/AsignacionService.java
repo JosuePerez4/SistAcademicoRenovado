@@ -10,10 +10,10 @@ import java.util.List;
 @Service
 public class AsignacionService {
 
-    private final CursoRepository cursoRepository;
-    private final DocenteRepository docenteRepository;
-
     @Autowired
+    private final CursoRepository cursoRepository;
+    @Autowired
+    private final DocenteRepository docenteRepository;
     public AsignacionService(CursoRepository cursoRepository, DocenteRepository docenteRepository) {
         this.cursoRepository = cursoRepository;
         this.docenteRepository = docenteRepository;

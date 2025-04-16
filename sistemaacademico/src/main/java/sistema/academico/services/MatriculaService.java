@@ -5,25 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import sistema.academico.DTO.ActualizarEstadoMatriculaRequestDTO;
-import sistema.academico.DTO.ActualizarEstadoMatriculaResponseDTO;
-import sistema.academico.DTO.EstudianteMatriculaDTO;
-import sistema.academico.DTO.MatriculaEstadoDTO;
-import sistema.academico.DTO.MatriculaEstudianteExistenteRequestDTO;
-import sistema.academico.DTO.MatriculaEstudianteExistenteResponsetDTO;
-import sistema.academico.DTO.MatriculaPrimeraVezRequestDTO;
-import sistema.academico.DTO.MatriculaPrimeraVezResponseDTO;
-import sistema.academico.DTO.MatriculaResponseDTO;
-import sistema.academico.DTO.MatriculaResumenEstudianteDTO;
-import sistema.academico.DTO.ProgramaAcademicoMatriculaDTO;
-import sistema.academico.DTO.SemestreMatriculaDTO;
-import sistema.academico.entities.Curso;
+import sistema.academico.DTO.*;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.entities.Matricula;

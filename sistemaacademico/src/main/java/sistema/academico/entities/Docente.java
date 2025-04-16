@@ -3,7 +3,6 @@ package sistema.academico.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
