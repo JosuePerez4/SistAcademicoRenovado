@@ -98,7 +98,7 @@ public class InscripcionService {
         return false;
     }
 
-    public boolean cursoAprobado(Long inscripcionId) {
+    public boolean estadoCurso(Long inscripcionId) {
         return inscripcionRepository.findById(inscripcionId)
                 .map(insc -> insc.getEstado() == EstadoInscripcion.APROBADO)
                 .orElse(false);
@@ -132,7 +132,7 @@ public class InscripcionService {
                 .orElse(null);
     }
 
-    @Transactional
+    /*@Transactional
     public Inscripcion inscribirEstudianteEnMateria(Long estudianteId, Long materiaId) {
         Estudiante estudiante = estudianteRepository.findById(estudianteId)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
@@ -156,6 +156,5 @@ public class InscripcionService {
         inscripcion.setEstado(EstadoInscripcion.INSCRITO);
 
         return inscripcionRepository.save(inscripcion);
-    }
-
+    }*/
 }

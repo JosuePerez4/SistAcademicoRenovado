@@ -17,7 +17,7 @@ public class InscripcionController {
     @Autowired
     private InscripcionService inscripcionService;
 
-    @PostMapping("/matricula/{matriculaId}/curso/{cursoId}")
+    @PostMapping("/matricular/{matriculaId}/curso/{cursoId}")
     public ResponseEntity<?> inscribirEnCurso(@PathVariable Long matriculaId, @PathVariable Long cursoId) {
         try {
             Inscripcion inscripcion = inscripcionService.inscribirEstudianteEnCurso(matriculaId, cursoId);
@@ -27,14 +27,14 @@ public class InscripcionController {
         }
     }
 
-    @GetMapping("/inscribir/{id}")
+    @GetMapping("/obtenerInscripcion/{id}")
     public ResponseEntity<Inscripcion> obtenerInscripcion(@PathVariable Long id) {
         return inscripcionService.obtenerInscripcionPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/matricula/{matriculaId}")
+    @GetMapping("/inscripcionesPorMatricula/{matriculaId}")
     public ResponseEntity<List<Inscripcion>> listarPorMatricula(@PathVariable Long matriculaId) {
         return ResponseEntity.ok(inscripcionService.listarInscripcionesPorMatricula(matriculaId));
     }
@@ -60,9 +60,9 @@ public class InscripcionController {
                 : ResponseEntity.badRequest().body("No se pudo registrar la nota final");
     }
 
-    @GetMapping("/aprobado/{id}")
-    public ResponseEntity<Boolean> cursoAprobado(@PathVariable Long id) {
-        return ResponseEntity.ok(inscripcionService.cursoAprobado(id));
+    @GetMapping("/estadoCurso/{id}")
+    public ResponseEntity<Boolean> estadoCurso(@PathVariable Long id) {
+        return ResponseEntity.ok(inscripcionService.estadoCurso(id));
     }
 
     @GetMapping("/aprobados/matricula/{matriculaId}")
@@ -99,7 +99,7 @@ public class InscripcionController {
     @PostMapping("/estudiante/{estudianteId}/materia/{materiaId}")
     public ResponseEntity<?> inscribirEnMateria(@PathVariable Long estudianteId, @PathVariable Long materiaId) {
         try {
-            Inscripcion inscripcion = inscripcionService.inscribirEstudianteEnMateria(estudianteId, materiaId);
+            Inscripcion inscripcion = inscripcionService.inscribirEstudianteEnCurso(estudianteId, materiaId);
             return ResponseEntity.ok(inscripcion);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
