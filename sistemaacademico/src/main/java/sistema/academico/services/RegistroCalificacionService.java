@@ -2,18 +2,10 @@ package sistema.academico.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sistema.academico.entities.Calificacion;
-import sistema.academico.entities.Curso;
-import sistema.academico.entities.Estudiante;
-import sistema.academico.entities.HistorialAcademico;
 import sistema.academico.repository.CalificacionRepository;
 import sistema.academico.repository.EstudianteRepository;
 import sistema.academico.repository.CursoRepository;
 import sistema.academico.repository.HistorialAcademicoRepository;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RegistroCalificacionService {

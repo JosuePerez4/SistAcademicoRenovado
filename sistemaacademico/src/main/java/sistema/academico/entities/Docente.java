@@ -3,7 +3,6 @@ package sistema.academico.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -32,9 +31,6 @@ public class Docente extends Usuario {
 
     @OneToMany(mappedBy = "docente")
     private List<Curso> cursos;
-
-    
-
 }
 
 

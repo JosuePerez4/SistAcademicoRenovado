@@ -9,9 +9,9 @@ import sistema.academico.services.AsignacionService;
 @RequestMapping("/asignacion")
 public class AsignacionController {
 
-    private final AsignacionService asignacionService;
-
     @Autowired
+    private final AsignacionService asignacionService;
+    
     public AsignacionController(AsignacionService asignacionService) {
         this.asignacionService = asignacionService;
     }

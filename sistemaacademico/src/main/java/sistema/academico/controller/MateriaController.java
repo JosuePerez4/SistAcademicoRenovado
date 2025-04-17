@@ -1,4 +1,4 @@
-package sistema.academico.controllers;
+package sistema.academico.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +17,12 @@ public class MateriaController {
 
     @PostMapping("/crear")
     public ResponseEntity<Materia> crearMateria(@RequestBody Materia materia) {
-        return ResponseEntity.ok(materiaService.crearMateria(materia));
+        return ResponseEntity.ok(materiaService.registrarMateria(materia));
     }
 
     @PutMapping("/modificar")
     public ResponseEntity<Materia> modificarMateria(@RequestBody Materia materia) {
-        return ResponseEntity.ok(materiaService.modificarMateria(materia));
+        return ResponseEntity.ok(materiaService.actualizarMateria(materia));
     }
 
     @DeleteMapping("/eliminar/{id}")
@@ -33,6 +33,6 @@ public class MateriaController {
 
     @GetMapping("/listar")
     public ResponseEntity<List<Materia>> listarTodasLasMaterias() {
-        return ResponseEntity.ok(materiaService.listarTodasLasMaterias());
+        return ResponseEntity.ok(materiaService.obtenerTodasLasMaterias());
     }
 }

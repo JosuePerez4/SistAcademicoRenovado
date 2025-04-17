@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import sistema.academico.entities.Curso;
+import sistema.academico.DTO.*;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.entities.Matricula;
@@ -21,6 +21,8 @@ import sistema.academico.enums.EstadoMatricula;
 import sistema.academico.repository.EstudianteRepository;
 import sistema.academico.repository.InscripcionRepository;
 import sistema.academico.repository.MatriculaRepository;
+import sistema.academico.repository.ProgramaAcademicoRepository;
+import sistema.academico.repository.SemestreRepository;
 
 @Service
 public class MatriculaService {
@@ -33,30 +35,135 @@ public class MatriculaService {
     @Autowired
     private InscripcionRepository inscripcionRepository;
 
-    public Matricula obtenerMatriculaPorId(Long id) {
-        return matriculaRepository.findById(id)
+    @Autowired
+    private SemestreRepository semestreRepository;
+
+    @Autowired
+    private ProgramaAcademicoRepository programaAcademicoRepository;
+
+    public MatriculaResponseDTO obtenerMatriculaPorId(Long id) {
+        Matricula matricula = matriculaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Matrícula no encontrada"));
+
+        MatriculaResponseDTO response = convertirAMatriculaResponseDTO(matricula);
+        return response;
     }
 
-    public List<Matricula> obtenerTodas() {
-        return matriculaRepository.findAll();
+    public List<MatriculaResponseDTO> obtenerTodas() {
+        List<Matricula> matriculas = matriculaRepository.findAll();
+        List<MatriculaResponseDTO> responseList = new ArrayList<>();
+
+        for (Matricula matricula : matriculas) {
+            MatriculaResponseDTO dto = convertirAMatriculaResponseDTO(matricula);
+            responseList.add(dto);
+        }
+
+        return responseList;
     }
 
-    public List<Matricula> obtenerPorEstudiante(Long estudianteId) {
-        return matriculaRepository.findByEstudianteId(estudianteId);
+    public List<MatriculaResumenEstudianteDTO> obtenerPorEstudiante(Long estudianteId) {
+        List<Matricula> matriculas = matriculaRepository.findByEstudianteId(estudianteId);
+        List<MatriculaResumenEstudianteDTO> responseList = new ArrayList<>();
+
+        for (Matricula matricula : matriculas) {
+            MatriculaResumenEstudianteDTO dto = new MatriculaResumenEstudianteDTO();
+            dto.setId(matricula.getId());
+            dto.setNombreEstudiante(matricula.getEstudiante().getNombre());
+            dto.setCodigoEstudiante(matricula.getEstudiante().getCodigo());
+            dto.setEstado(matricula.getEstado());
+            dto.setNumeroSemestre(matricula.getSemestre().getNumero());
+            dto.setNombreSemestre(matricula.getSemestre().getNombre());
+
+            responseList.add(dto);
+        }
+
+        return responseList;
     }
 
-    public List<Matricula> obtenerPorSemestre(Long semestreId) {
-        return matriculaRepository.findBySemestreId(semestreId);
+    // Método privvado para convertir las matriculas en el modelo correspondiente de
+    // DTO
+    private MatriculaResponseDTO convertirAMatriculaResponseDTO(Matricula matricula) {
+        MatriculaResponseDTO response = new MatriculaResponseDTO();
+        response.setId(matricula.getId());
+        response.setFechaMatricula(matricula.getFechaMatricula());
+        response.setFechaCancelacion(matricula.getFechaCancelacion());
+        response.setMotivoCancelacion(matricula.getMotivoCancelacion());
+        response.setEstado(matricula.getEstado());
+
+        Estudiante estudiante = matricula.getEstudiante();
+        response.setEstudiante(new EstudianteMatriculaDTO(
+                estudiante.getCedula(),
+                estudiante.getNombre(),
+                estudiante.getApellido(),
+                estudiante.getCorreo(),
+                estudiante.getTelefono(),
+                estudiante.getCodigo()));
+
+        Semestre semestre = matricula.getSemestre();
+        response.setSemestre(new SemestreMatriculaDTO(
+                semestre.getId(),
+                semestre.getNumero(),
+                semestre.getNombre(),
+                semestre.getAnio(),
+                semestre.getFechaInicio(),
+                semestre.getFechaFin()));
+
+        ProgramaAcademico programaAcademico = matricula.getPrograma();
+        response.setProgramaAcademico(new ProgramaAcademicoMatriculaDTO(
+                programaAcademico.getNombre(),
+                programaAcademico.getCodigo()));
+
+        return response;
     }
 
-    public List<Matricula> obtenerPorEstado(EstadoMatricula estado) {
-        return matriculaRepository.findByEstado(estado);
+    public List<MatriculaResumenEstudianteDTO> obtenerPorSemestre(Long semestreId) {
+        List<Matricula> matriculas = matriculaRepository.findBySemestreId(semestreId);
+        List<MatriculaResumenEstudianteDTO> responseList = new ArrayList<>();
+
+        for (Matricula matricula : matriculas) {
+            MatriculaResumenEstudianteDTO dto = new MatriculaResumenEstudianteDTO();
+            dto.setId(matricula.getId());
+            dto.setNombreEstudiante(matricula.getEstudiante().getNombre());
+            dto.setCodigoEstudiante(matricula.getEstudiante().getCodigo());
+            dto.setEstado(matricula.getEstado());
+            dto.setNumeroSemestre(matricula.getSemestre().getNumero());
+            dto.setNombreSemestre(matricula.getSemestre().getNombre());
+
+            responseList.add(dto);
+        }
+        return responseList;
+    }
+
+    public List<MatriculaEstadoDTO> obtenerPorEstado(EstadoMatricula estado) {
+        List<Matricula> matriculas = matriculaRepository.findByEstado(estado);
+        List<MatriculaEstadoDTO> responseList = new ArrayList<>();
+
+        for (Matricula matricula : matriculas) {
+            MatriculaEstadoDTO dto = new MatriculaEstadoDTO();
+            dto.setId(matricula.getId());
+            dto.setEstudianteNombre(matricula.getEstudiante().getNombre());
+            dto.setEstado(matricula.getEstado());
+            dto.setFechaMatricula(matricula.getFechaMatricula());
+            dto.setMotivoCancelacion(matricula.getMotivoCancelacion());
+
+            responseList.add(dto);
+        }
+
+        return responseList;
     }
 
     @Transactional
-    public Matricula matricularEstudiantePrimeraVez(Estudiante estudiante, Semestre semestre,
-            ProgramaAcademico programaAcademico) {
+    public MatriculaPrimeraVezResponseDTO matricularEstudiantePrimeraVez(MatriculaPrimeraVezRequestDTO dto) {
+
+        Estudiante estudiante = estudianteRepository.findById(dto.getEstudianteId())
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado con id: " + dto.getEstudianteId()));
+
+        Semestre semestre = semestreRepository.findById(dto.getSemestreId())
+                .orElseThrow(() -> new RuntimeException("Semestre no encontrado con id: " + dto.getSemestreId()));
+
+        ProgramaAcademico programaAcademico = programaAcademicoRepository.findById(dto.getProgramaId())
+                .orElseThrow(() -> new RuntimeException(
+                        "Programa académico no encontrado con id: " + dto.getProgramaId()));
 
         if (matriculaRepository.existsByEstudianteAndSemestre(estudiante, semestre)) {
             throw new IllegalStateException("El estudiante ya está matriculado en este semestre.");
@@ -67,27 +174,42 @@ public class MatriculaService {
         }
 
         if (estudiante.getProgramaAcademico() == null) {
-            if (programaAcademico == null) {
-                throw new IllegalArgumentException("Debe proporcionar un programa académico para nuevos estudiantes.");
-            }
             estudiante.setProgramaAcademico(programaAcademico);
         }
-
+        estudiante.setProgramaAcademico(programaAcademico);
         estudianteRepository.save(estudiante);
 
         Matricula matricula = new Matricula();
         matricula.setEstudiante(estudiante);
         matricula.setSemestre(semestre);
-        matricula.setPrograma(programaAcademico != null ? programaAcademico : estudiante.getProgramaAcademico());
+        matricula.setPrograma(estudiante.getProgramaAcademico());
         matricula.setFechaMatricula(LocalDate.now());
         matricula.setEstado(EstadoMatricula.ACTIVA);
         matricula.setInscripciones(new ArrayList<>());
 
-        return matriculaRepository.save(matricula); // devolvemos la matrícula persistida
+        matriculaRepository.save(matricula);
+
+        MatriculaPrimeraVezResponseDTO response = new MatriculaPrimeraVezResponseDTO();
+        response.setId(matricula.getId());
+        response.setFechaMatricula(matricula.getFechaMatricula().toString());
+        response.setEstado(matricula.getEstado().toString());
+        response.setEstudianteId(estudiante.getId());
+        response.setSemestreId(semestre.getId());
+        response.setProgramaId(programaAcademico.getId());
+
+        return response;
     }
 
     @Transactional
-    public boolean matricularEstudiante(Estudiante estudiante, Semestre semestre, List<Curso> cursos) {
+    public MatriculaEstudianteExistenteResponsetDTO matricularEstudiante(
+            MatriculaEstudianteExistenteRequestDTO requestDTO) {
+
+        // Obtener estudiante y semestre usando los IDs del DTO
+        Estudiante estudiante = estudianteRepository.findById(requestDTO.getEstudianteId())
+                .orElseThrow(() -> new IllegalStateException("Estudiante no encontrado."));
+        Semestre semestre = semestreRepository.findById(requestDTO.getSemestreId())
+                .orElseThrow(() -> new IllegalStateException("Semestre no encontrado."));
+
         // Validar que el estudiante tenga programa
         if (estudiante.getProgramaAcademico() == null) {
             throw new IllegalStateException("El estudiante no tiene un programa académico asignado.");
@@ -108,7 +230,16 @@ public class MatriculaService {
         matricula.setInscripciones(new ArrayList<>());
         matriculaRepository.save(matricula);
 
-        return true;
+        // Devolver el DTO con información detallada
+        return new MatriculaEstudianteExistenteResponsetDTO(
+                matricula.getId(),
+                estudiante.getId(),
+                estudiante.getNombre(),
+                semestre.getId(),
+                semestre.getNombre(),
+                estudiante.getProgramaAcademico().getNombre(),
+                matricula.getFechaMatricula(),
+                matricula.getEstado().name());
     }
 
     public long contarCursosAprobados(long matriculaId) {
@@ -119,17 +250,17 @@ public class MatriculaService {
     }
 
     @Transactional
-    public boolean cancelarMatricula(String motivo, long matriculaId) {
+    public String cancelarMatricula(String motivo, long matriculaId) {
         Optional<Matricula> optionalMatricula = matriculaRepository.findById(matriculaId);
 
         if (optionalMatricula.isEmpty()) {
-            return false; // No existe la matrícula
+            return "No existe la matricula"; // No existe la matrícula
         }
 
         Matricula matricula = optionalMatricula.get();
 
         if (matricula.getEstado() != EstadoMatricula.ACTIVA) {
-            return false; // Solo se pueden cancelar matrículas activas
+            return "Solo se pueden cancelar matriculas activas"; // Solo se pueden cancelar matrículas activas
         }
 
         // Actualizar estado y datos de cancelación
@@ -149,14 +280,38 @@ public class MatriculaService {
         // Guardar cambios
         matriculaRepository.save(matricula);
 
-        return true;
+        return matricula.getEstado().toString(); // Retornar el nuevo estado de la matrícula
     }
 
-    public boolean actualizarEstadoMatricula(Long matriculaId, EstadoMatricula nuevoEstado) {
-        Matricula matricula = obtenerMatriculaPorId(matriculaId);
-        matricula.setEstado(nuevoEstado);
+    @Transactional
+    public ActualizarEstadoMatriculaResponseDTO actualizarEstadoMatricula(
+            ActualizarEstadoMatriculaRequestDTO requestDTO) {
+
+        // Buscar directamente en el repositorio
+        Matricula matricula = matriculaRepository.findById(requestDTO.getMatriculaId())
+                .orElseThrow(() -> new NoSuchElementException("Matrícula no encontrada"));
+
+        // Guardar el estado anterior
+        String estadoAnterior = matricula.getEstado().name();
+
+        // Verificar si el estado anterior es CANCELADA y el nuevo estado es ACTIVA
+        if (matricula.getEstado() == EstadoMatricula.CANCELADA
+                && requestDTO.getNuevoEstado() == EstadoMatricula.ACTIVA) {
+            // Establecer null en los campos de cancelación
+            matricula.setFechaCancelacion(null);
+            matricula.setMotivoCancelacion(null);
+        }
+
+        // Actualizar estado de la matrícula
+        matricula.setEstado(requestDTO.getNuevoEstado());
         matriculaRepository.save(matricula);
-        return true;
+
+        // Construir y devolver la respuesta
+        return new ActualizarEstadoMatriculaResponseDTO(
+                matricula.getId(),
+                estadoAnterior,
+                matricula.getEstado().name(),
+                LocalDate.now());
     }
 
 }

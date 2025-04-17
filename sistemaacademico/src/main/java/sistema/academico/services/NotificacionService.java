@@ -3,12 +3,8 @@ package sistema.academico.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import sistema.academico.entities.Mensaje;
 import sistema.academico.entities.Notificacion;
-import sistema.academico.entities.Usuario;
 import sistema.academico.repository.NotificacionRepository;
-
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
