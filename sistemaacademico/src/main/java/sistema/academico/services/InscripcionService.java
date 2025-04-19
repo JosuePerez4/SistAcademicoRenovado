@@ -1,6 +1,7 @@
 package sistema.academico.services;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,14 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import sistema.academico.DTO.EstadoInscripcionResponseDTO;
+import sistema.academico.DTO.InscripcionResponseDTO;
+import sistema.academico.DTO.InscripcionesPorMatriculaResponseDTO;
+import sistema.academico.DTO.MatricularCursoResponseDTO;
 import sistema.academico.entities.Curso;
-import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.entities.Matricula;
 import sistema.academico.enums.EstadoInscripcion;
-import sistema.academico.enums.EstadoMatricula;
 import sistema.academico.repository.CursoRepository;
-import sistema.academico.repository.EstudianteRepository;
 import sistema.academico.repository.InscripcionRepository;
 import sistema.academico.repository.MatriculaRepository;
 
@@ -25,19 +27,13 @@ public class InscripcionService {
     private InscripcionRepository inscripcionRepository;
 
     @Autowired
-    private EstudianteRepository estudianteRepository;
-
-    @Autowired
     private MatriculaRepository matriculaRepository;
 
     @Autowired
     private CursoRepository cursoRepository;
 
-    @Autowired
-    private CursoService cursoService;
-
     @Transactional
-    public Inscripcion inscribirEstudianteEnCurso(Long matriculaId, Long cursoId) {
+    public MatricularCursoResponseDTO inscribirEstudianteEnCurso(Long matriculaId, Long cursoId) {
         if (inscripcionRepository.existsByMatriculaIdAndCursoId(matriculaId, cursoId)) {
             throw new IllegalArgumentException("Ya está inscrito en este curso.");
         }
@@ -53,15 +49,69 @@ public class InscripcionService {
         inscripcion.setFechaInscripcion(LocalDate.now());
         inscripcion.setEstado(EstadoInscripcion.INSCRITO);
 
-        return inscripcionRepository.save(inscripcion);
+        inscripcion = inscripcionRepository.save(inscripcion);
+
+        MatricularCursoResponseDTO response = new MatricularCursoResponseDTO();
+        response.setIdInscripcion(inscripcion.getId());
+        response.setNombreCurso(curso.getNombre());
+        response.setCodigoCurso(curso.getCodigo());
+        response.setNombreEstudiante(
+                matricula.getEstudiante().getNombre() + " " + matricula.getEstudiante().getApellido());
+        response.setEstadoInscripcion(inscripcion.getEstado().name());
+        response.setFechaInscripcion(inscripcion.getFechaInscripcion().toString());
+
+        return response;
     }
 
-    public Optional<Inscripcion> obtenerInscripcionPorId(Long id) {
-        return inscripcionRepository.findById(id);
+    public MatricularCursoResponseDTO obtenerInscripcionPorId(Long id) {
+        Optional<Inscripcion> inscripcionOpt = inscripcionRepository.findById(id);
+        if (inscripcionOpt.isPresent()) {
+            Inscripcion inscripcion = inscripcionOpt.get();
+            MatricularCursoResponseDTO response = new MatricularCursoResponseDTO();
+            response.setIdInscripcion(inscripcion.getId());
+            response.setNombreCurso(inscripcion.getCurso().getNombre());
+            response.setCodigoCurso(inscripcion.getCurso().getCodigo());
+            response.setNombreEstudiante(inscripcion.getMatricula().getEstudiante().getNombre() + " "
+                    + inscripcion.getMatricula().getEstudiante().getApellido());
+            response.setEstadoInscripcion(inscripcion.getEstado().name());
+            response.setFechaInscripcion(inscripcion.getFechaInscripcion().toString());
+            return response;
+        }
+        return null;
     }
 
-    public List<Inscripcion> listarInscripcionesPorMatricula(Long matriculaId) {
-        return inscripcionRepository.findByMatriculaId(matriculaId);
+    public InscripcionesPorMatriculaResponseDTO listarInscripcionesPorMatricula(Long matriculaId) {
+        Matricula matricula = matriculaRepository.findById(matriculaId)
+                .orElseThrow(() -> new IllegalArgumentException("Matrícula no encontrada"));
+        List<Inscripcion> inscripciones = inscripcionRepository.findByMatriculaId(matriculaId);
+
+        // Crear el objeto de respuesta principal
+        InscripcionesPorMatriculaResponseDTO response = new InscripcionesPorMatriculaResponseDTO();
+        response.setIdMatricula(matricula.getId());
+        response.setEstudianteNombre(
+                matricula.getEstudiante().getNombre() + " " + matricula.getEstudiante().getApellido());
+
+        // Crear una lista para las inscripciones convertidas
+        List<InscripcionResponseDTO> inscripcionesDTO = new ArrayList<>();
+
+        // Recorrer las inscripciones y convertirlas
+        for (Inscripcion inscripcion : inscripciones) {
+            InscripcionResponseDTO inscripcionDTO = new InscripcionResponseDTO();
+            inscripcionDTO.setIdInscripcion(inscripcion.getId());
+            inscripcionDTO.setIdCurso(inscripcion.getCurso().getId());
+            inscripcionDTO.setNombreCurso(inscripcion.getCurso().getNombre());
+            inscripcionDTO.setEstadoInscripcion(inscripcion.getEstado().name());
+            inscripcionDTO.setNotaFinal(inscripcion.getNotaFinal() != null ? inscripcion.getNotaFinal() : 0.0);
+            inscripcionDTO.setFechaInscripcion(inscripcion.getFechaInscripcion().toString());
+
+            inscripcionesDTO.add(inscripcionDTO);
+        }
+
+        // Asignar la lista de inscripciones convertidas al objeto de respuesta
+        // principal
+        response.setInscripciones(inscripcionesDTO);
+
+        return response;
     }
 
     @Transactional
@@ -75,7 +125,7 @@ public class InscripcionService {
     }
 
     @Transactional
-    public boolean cancelarInscripcion(Long inscripcionId, String motivo) {
+    public boolean cancelarInscripcion(Long inscripcionId) {
         Optional<Inscripcion> inscripcionOpt = inscripcionRepository.findById(inscripcionId);
         if (inscripcionOpt.isPresent()) {
             Inscripcion insc = inscripcionOpt.get();
@@ -98,28 +148,48 @@ public class InscripcionService {
         return false;
     }
 
-    public boolean estadoCurso(Long inscripcionId) {
-        return inscripcionRepository.findById(inscripcionId)
-                .map(insc -> insc.getEstado() == EstadoInscripcion.APROBADO)
-                .orElse(false);
+    public EstadoInscripcionResponseDTO estadoCurso(Long inscripcionId) {
+        Optional<Inscripcion> inscripcionOpt = inscripcionRepository.findById(inscripcionId);
+        if (inscripcionOpt.isPresent()) {
+            Inscripcion inscripcion = inscripcionOpt.get();
+            EstadoInscripcionResponseDTO response = new EstadoInscripcionResponseDTO();
+            response.setEstadoInscripcion(inscripcion.getEstado().name());
+            return response;
+        }
+        return null;
     }
 
     public long contarCursosAprobadosPorMatricula(Long matriculaId) {
         return inscripcionRepository.countByMatriculaIdAndEstado(matriculaId, EstadoInscripcion.APROBADO);
     }
 
-    public List<Curso> obtenerCursosPorMatricula(Long matriculaId) {
-        return inscripcionRepository.findByMatriculaId(matriculaId).stream()
-                .map(Inscripcion::getCurso)
-                .toList();
-    }
-
     public boolean existeInscripcion(Long matriculaId, Long cursoId) {
         return inscripcionRepository.existsByMatriculaIdAndCursoId(matriculaId, cursoId);
     }
 
-    public List<Inscripcion> listarInscripcionesActivasPorCurso(Long cursoId) {
-        return inscripcionRepository.findByCursoIdAndEstado(cursoId, EstadoInscripcion.INSCRITO);
+    public List<MatricularCursoResponseDTO> listarInscripcionesActivasPorCurso(Long cursoId) {
+        List<Inscripcion> inscripciones = inscripcionRepository.findByCursoIdAndEstado(cursoId,
+                EstadoInscripcion.INSCRITO);
+        List<MatricularCursoResponseDTO> responseList = new ArrayList<>();
+
+        for (Inscripcion inscripcion : inscripciones) {
+            MatricularCursoResponseDTO response = new MatricularCursoResponseDTO();
+            response.setIdInscripcion(inscripcion.getId());
+            response.setNombreCurso(inscripcion.getCurso().getNombre());
+            response.setCodigoCurso(inscripcion.getCurso().getCodigo());
+            response.setNombreEstudiante(inscripcion.getMatricula().getEstudiante().getNombre() + " "
+                    + inscripcion.getMatricula().getEstudiante().getApellido());
+            response.setEstadoInscripcion(inscripcion.getEstado().name());
+            response.setFechaInscripcion(inscripcion.getFechaInscripcion().toString());
+
+            responseList.add(response);
+        }
+
+        return responseList;
+    }
+
+    public int contarInscripcionesActivasPorCurso(Long cursoId) {
+        return inscripcionRepository.findByCursoIdAndEstado(cursoId, EstadoInscripcion.INSCRITO).size();
     }
 
     public long contarInscritosEnCurso(Long cursoId) {
@@ -131,30 +201,4 @@ public class InscripcionService {
                 .map(Inscripcion::getNotaFinal)
                 .orElse(null);
     }
-
-    /*@Transactional
-    public Inscripcion inscribirEstudianteEnMateria(Long estudianteId, Long materiaId) {
-        Estudiante estudiante = estudianteRepository.findById(estudianteId)
-                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
-
-        Matricula matricula = matriculaRepository
-                .findByEstudianteIdAndEstado(estudianteId, EstadoMatricula.ACTIVA)
-                .orElseThrow(() -> new RuntimeException("No hay matrícula activa para el estudiante"));
-
-        List<Curso> cursosDisponibles = cursoService.obtenerCursosDisponiblesPorMateria(materiaId);
-
-        if (cursosDisponibles.isEmpty()) {
-            throw new RuntimeException("No hay cupo disponible para esta materia");
-        }
-
-        Curso curso = cursosDisponibles.get(0); // Simple: asignar al primero con cupo
-
-        Inscripcion inscripcion = new Inscripcion();
-        inscripcion.setCurso(curso);
-        inscripcion.setMatricula(matricula);
-        inscripcion.setFechaInscripcion(LocalDate.now());
-        inscripcion.setEstado(EstadoInscripcion.INSCRITO);
-
-        return inscripcionRepository.save(inscripcion);
-    }*/
 }

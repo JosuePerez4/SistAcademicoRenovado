@@ -2,9 +2,11 @@ package sistema.academico.DTO;
 
 import java.time.LocalDate;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class EstudianteUpdateDTO {
     private String nombre;
     private String apellido;
