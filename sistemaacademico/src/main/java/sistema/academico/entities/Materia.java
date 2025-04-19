@@ -21,6 +21,9 @@ public class Materia {
     @Column(name = "creditos")
     private int creditos;
 
+    @Column(name = "codigo", unique = true)
+    private String codigo;
+
     @Column(name = "descripcion")
     private String descripcion;
 

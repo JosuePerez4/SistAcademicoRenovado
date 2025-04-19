@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import sistema.academico.entities.Curso;
-import sistema.academico.entities.Inscripcion;
+import sistema.academico.DTO.EstadoInscripcionResponseDTO;
+import sistema.academico.DTO.InscripcionesPorMatriculaResponseDTO;
+import sistema.academico.DTO.MatricularCursoResponseDTO;
 import sistema.academico.services.InscripcionService;
 
 @RestController
@@ -18,25 +19,18 @@ public class InscripcionController {
     private InscripcionService inscripcionService;
 
     @PostMapping("/matricular/{matriculaId}/curso/{cursoId}")
-    public ResponseEntity<?> inscribirEnCurso(@PathVariable Long matriculaId, @PathVariable Long cursoId) {
-        try {
-            Inscripcion inscripcion = inscripcionService.inscribirEstudianteEnCurso(matriculaId, cursoId);
-            return ResponseEntity.ok(inscripcion);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public MatricularCursoResponseDTO inscribirEnCurso(@PathVariable Long matriculaId, @PathVariable Long cursoId) {
+        return inscripcionService.inscribirEstudianteEnCurso(matriculaId, cursoId);
     }
 
     @GetMapping("/obtenerInscripcion/{id}")
-    public ResponseEntity<Inscripcion> obtenerInscripcion(@PathVariable Long id) {
-        return inscripcionService.obtenerInscripcionPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public MatricularCursoResponseDTO obtenerInscripcion(@PathVariable Long id) {
+        return inscripcionService.obtenerInscripcionPorId(id);
     }
 
     @GetMapping("/inscripcionesPorMatricula/{matriculaId}")
-    public ResponseEntity<List<Inscripcion>> listarPorMatricula(@PathVariable Long matriculaId) {
-        return ResponseEntity.ok(inscripcionService.listarInscripcionesPorMatricula(matriculaId));
+    public InscripcionesPorMatriculaResponseDTO listarPorMatricula(@PathVariable Long matriculaId) {
+        return inscripcionService.listarInscripcionesPorMatricula(matriculaId);
     }
 
     @DeleteMapping("/eliminar/{id}")
@@ -47,32 +41,23 @@ public class InscripcionController {
     }
 
     @PostMapping("/cancelar/{id}")
-    public ResponseEntity<String> cancelarInscripcion(@PathVariable Long id, @RequestParam String motivo) {
-        return inscripcionService.cancelarInscripcion(id, motivo)
+    public ResponseEntity<String> cancelarInscripcion(@PathVariable Long id) {
+        return inscripcionService.cancelarInscripcion(id)
                 ? ResponseEntity.ok("Inscripción cancelada")
                 : ResponseEntity.badRequest().body("No se pudo cancelar la inscripción");
     }
 
-    @PostMapping("/nota/{id}")
-    public ResponseEntity<String> registrarNotaFinal(@PathVariable Long id, @RequestParam Double notaFinal) {
-        return inscripcionService.registrarNotaFinal(id, notaFinal)
-                ? ResponseEntity.ok("Nota final registrada")
-                : ResponseEntity.badRequest().body("No se pudo registrar la nota final");
-    }
-
     @GetMapping("/estadoCurso/{id}")
-    public ResponseEntity<Boolean> estadoCurso(@PathVariable Long id) {
-        return ResponseEntity.ok(inscripcionService.estadoCurso(id));
+    public ResponseEntity<?> estadoCurso(@PathVariable Long id) {
+        EstadoInscripcionResponseDTO estado = inscripcionService.estadoCurso(id);
+        return estado != null
+                ? ResponseEntity.ok(estado)
+                : ResponseEntity.badRequest().body("El curso no está inscrito");
     }
 
-    @GetMapping("/aprobados/matricula/{matriculaId}")
+    @GetMapping("/cantidadInscripciones/aprobadas/porMatricula/{matriculaId}")
     public ResponseEntity<Long> contarCursosAprobados(@PathVariable Long matriculaId) {
         return ResponseEntity.ok(inscripcionService.contarCursosAprobadosPorMatricula(matriculaId));
-    }
-
-    @GetMapping("/cursos/matricula/{matriculaId}")
-    public ResponseEntity<List<Curso>> obtenerCursosPorMatricula(@PathVariable Long matriculaId) {
-        return ResponseEntity.ok(inscripcionService.obtenerCursosPorMatricula(matriculaId));
     }
 
     @GetMapping("/existe")
@@ -80,29 +65,24 @@ public class InscripcionController {
         return ResponseEntity.ok(inscripcionService.existeInscripcion(matriculaId, cursoId));
     }
 
-    @GetMapping("/activas/curso/{cursoId}")
-    public ResponseEntity<List<Inscripcion>> listarActivasPorCurso(@PathVariable Long cursoId) {
-        return ResponseEntity.ok(inscripcionService.listarInscripcionesActivasPorCurso(cursoId));
+    @GetMapping("/contarInscripciones/activas/porCurso/{cursoId}")
+    public int contarActivasPorCurso(@PathVariable Long cursoId) {
+        return inscripcionService.contarInscripcionesActivasPorCurso(cursoId);
     }
 
-    @GetMapping("/contar/curso/{cursoId}")
+    @GetMapping("/inscripciones/activas/porCurso/{cursoId}")
+    public List<MatricularCursoResponseDTO> listarActivasPorCurso(@PathVariable Long cursoId) {
+        return inscripcionService.listarInscripcionesActivasPorCurso(cursoId);
+    }
+
+    @GetMapping("/cantidadVecesInscrito/curso/{cursoId}")
     public ResponseEntity<Long> contarInscritosCurso(@PathVariable Long cursoId) {
         return ResponseEntity.ok(inscripcionService.contarInscritosEnCurso(cursoId));
     }
 
     @GetMapping("/nota")
-    public ResponseEntity<Double> obtenerNotaFinal(@RequestParam Long matriculaId, @RequestParam Long cursoId) {
+    public String obtenerNotaFinal(@RequestParam Long matriculaId, @RequestParam Long cursoId) {
         Double nota = inscripcionService.obtenerNotaFinal(matriculaId, cursoId);
-        return nota != null ? ResponseEntity.ok(nota) : ResponseEntity.notFound().build();
-    }
-
-    @PostMapping("/estudiante/{estudianteId}/materia/{materiaId}")
-    public ResponseEntity<?> inscribirEnMateria(@PathVariable Long estudianteId, @PathVariable Long materiaId) {
-        try {
-            Inscripcion inscripcion = inscripcionService.inscribirEstudianteEnCurso(estudianteId, materiaId);
-            return ResponseEntity.ok(inscripcion);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return nota != null ? String.valueOf(nota) : "No se tiene nota final aún";
     }
 }
