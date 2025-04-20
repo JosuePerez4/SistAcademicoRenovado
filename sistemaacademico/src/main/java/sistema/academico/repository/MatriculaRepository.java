@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
     boolean existsByEstudianteAndSemestre(Estudiante estudiante, Semestre semestre);
-
+    
     List<Matricula> findByEstudianteId(long estudianteId);
 
     List<Matricula> findBySemestreId(long semestreId);
