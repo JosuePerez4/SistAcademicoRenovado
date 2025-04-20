@@ -79,7 +79,8 @@ public class RegistroCalificacionService {
             calificacion.setNota(nuevaNota);
             calificacionRepository.save(calificacion);
 
-            actualizarHistorialAcademico(calificacion.getInscripcion().getMatricula().getEstudiante().getId(), nuevaNota);
+            actualizarHistorialAcademico(calificacion.getInscripcion().getMatricula().getEstudiante().getId(),
+                    nuevaNota);
 
             return true;
         }
@@ -145,5 +146,17 @@ public class RegistroCalificacionService {
                 }
             }
         }
+    }
+
+    @Transactional
+    public boolean eliminarCalificacion(Long idCalificacion) {
+        Optional<Calificacion> calificacionOpt = calificacionRepository.findById(idCalificacion);
+        if (calificacionOpt.isPresent()) {
+            calificacionRepository.deleteById(idCalificacion);
+            // Opcional: Considerar si se debe actualizar el historial académico al eliminar
+            // una calificación
+            return true;
+        }
+        return false;
     }
 }
