@@ -41,6 +41,4 @@ public class Curso {
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
     private List<Inscripcion> inscripciones;
 
-    // Opcional:
-    // private List<Clase> clases; // solo si registras sesiones individuales
 }
