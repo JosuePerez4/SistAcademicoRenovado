@@ -22,5 +22,5 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Long> 
 
     Optional<Inscripcion> findByMatriculaIdAndCursoId(Long matriculaId, Long cursoId);
 
-    
+    List<Inscripcion> findByCursoId(Long cursoId);
 }
