@@ -14,6 +14,7 @@ import sistema.academico.DTO.CalificacionRequestDTO;
 import sistema.academico.DTO.CalificacionResponseDTO;
 import sistema.academico.entities.Calificacion;
 import sistema.academico.entities.Estudiante;
+import sistema.academico.repository.CalificacionRepository;
 import sistema.academico.services.RegistroCalificacionService;
 
 @RestController
@@ -101,5 +102,15 @@ public class CalificacionController {
         responseDTO.setNombreCompletoEstudiante(estudiante.getNombre() + " " + estudiante.getApellido());
         responseDTO.setTipoEvaluacion(calificacion.getEvaluacion().getTipo().toString());
         return responseDTO;
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminarCalificacion(@PathVariable Long id) {
+        boolean eliminada = registroCalificacionService.eliminarCalificacion(id);
+        if (eliminada) {
+            return new ResponseEntity<>("Calificación eliminada exitosamente", HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>("No se encontró la calificación con el ID proporcionado.", HttpStatus.NOT_FOUND);
+        }
     }
 }
