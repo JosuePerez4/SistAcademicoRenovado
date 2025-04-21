@@ -74,6 +74,16 @@ public class WebSecurityConfig {
                                                                                        // todos los cursos
                         .requestMatchers(HttpMethod.POST, "/api/cursos/**").hasRole("DOCENTE") // Solo los docentes
                                                                                                // pueden crear cursos
+                        .requestMatchers("/api/estudiantes/**").hasRole("ESTUDIANTE") // Solo los estudiantes pueden
+                                                                                                    // acceder a /api/estudiantes/**
+                        .requestMatchers("/api/docentes/**").hasRole("DOCENTE") // Solo los docentes pueden acceder a
+                                                                                                  // /api/docentes/**
+                        .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR") // Solo los administradores pueden
+                                                                                                    // acceder a /api/admin/**
+                        .requestMatchers(HttpMethod.GET, "/api/cursos/**").permitAll() // Permitimos acceso de lectura a
+                                                                                                      // todos los cursos
+                        .requestMatchers(HttpMethod.POST, "/api/cursos/**").hasRole("DOCENTE") // Solo los docentes
+                                                                                                       // pueden crear cursos
                         .anyRequest().authenticated() // Todas las demás peticiones requieren autenticación
                 )
                 .formLogin(form -> form.disable()) // Deshabilitamos el formulario de login por defecto
