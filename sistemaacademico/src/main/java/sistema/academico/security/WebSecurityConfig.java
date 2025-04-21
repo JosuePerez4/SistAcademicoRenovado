@@ -61,16 +61,19 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll() // Permitir acceso a v3 API docs
                         .requestMatchers("/swagger-ui/**").permitAll() // Permitir acceso a Swagger UI
+                        .requestMatchers("/api/asistencia/**").permitAll() // Permitimos acceso de
+                                                                                            // lectura a
+                                                                                            // asistencias
                         .requestMatchers("/api/estudiantes/**").hasRole("ESTUDIANTE") // Solo los estudiantes pueden
-                                                                                                    // acceder a /api/estudiantes/**
+                                                                                      // acceder a /api/estudiantes/**
                         .requestMatchers("/api/docentes/**").hasRole("DOCENTE") // Solo los docentes pueden acceder a
-                                                                                                  // /api/docentes/**
+                                                                                // /api/docentes/**
                         .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR") // Solo los administradores pueden
-                                                                                                    // acceder a /api/admin/**
+                                                                                   // acceder a /api/admin/**
                         .requestMatchers(HttpMethod.GET, "/api/cursos/**").permitAll() // Permitimos acceso de lectura a
-                                                                                                      // todos los cursos
+                                                                                       // todos los cursos
                         .requestMatchers(HttpMethod.POST, "/api/cursos/**").hasRole("DOCENTE") // Solo los docentes
-                                                                                                       // pueden crear cursos
+                                                                                               // pueden crear cursos
                         .anyRequest().authenticated() // Todas las demás peticiones requieren autenticación
                 )
                 .formLogin(form -> form.disable()) // Deshabilitamos el formulario de login por defecto

@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import sistema.academico.enums.AsistenciaEstado;
 
-
 @Entity
 @Data
 @NoArgsConstructor
@@ -20,13 +19,15 @@ public class Asistencia {
 
     @Column(name = "estado", nullable = false)
     @Enumerated(EnumType.STRING)
-    private AsistenciaEstado estado; // Puedes cambiarlo por un ENUM si lo manejas así
+    private AsistenciaEstado estado;
 
     @ManyToOne
-    @JoinColumn(name = "estudiante_id", nullable = false)
-    private Estudiante estudiante;
+    @JoinColumn(name = "inscripcion_id", nullable = false)
+    private Inscripcion inscripcion;
 
     @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
-}
 
+    @Column(name = "justificacion", columnDefinition = "TEXT")
+    private String justificacion;
+}
