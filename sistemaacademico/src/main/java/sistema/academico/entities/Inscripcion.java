@@ -35,4 +35,7 @@ public class Inscripcion {
 
     @OneToMany(mappedBy = "inscripcion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calificacion> calificaciones;
+
+    @OneToMany(mappedBy = "inscripcion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Asistencia> asistencias;
 }

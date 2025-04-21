@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import sistema.academico.services.AsignacionService;
 
 @RestController
-@RequestMapping("/asignacion")
+@RequestMapping("/api/asignacion")
 public class AsignacionController {
 
     @Autowired

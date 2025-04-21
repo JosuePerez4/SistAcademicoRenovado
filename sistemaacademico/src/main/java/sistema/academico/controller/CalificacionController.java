@@ -14,7 +14,6 @@ import sistema.academico.DTO.CalificacionRequestDTO;
 import sistema.academico.DTO.CalificacionResponseDTO;
 import sistema.academico.entities.Calificacion;
 import sistema.academico.entities.Estudiante;
-import sistema.academico.repository.CalificacionRepository;
 import sistema.academico.services.RegistroCalificacionService;
 
 @RestController
