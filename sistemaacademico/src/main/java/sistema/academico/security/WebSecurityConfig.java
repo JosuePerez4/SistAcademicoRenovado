@@ -56,40 +56,14 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Deshabilitamos CSRF por ahora (considerar habilitarlo en producción)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll() // Permitir acceso a v3 API docs
-                        .requestMatchers("/swagger-ui/**").permitAll() // Permitir acceso a Swagger UI
-                        .requestMatchers("/api/asistencia/**").permitAll() // Permitimos acceso de
-                                                                                            // lectura a
-                                                                                            // asistencias
-                        .requestMatchers("/api/estudiantes/**").hasRole("ESTUDIANTE") // Solo los estudiantes pueden
-                                                                                      // acceder a /api/estudiantes/**
-                        .requestMatchers("/api/docentes/**").hasRole("DOCENTE") // Solo los docentes pueden acceder a
-                                                                                // /api/docentes/**
-                        .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR") // Solo los administradores pueden
-                                                                                   // acceder a /api/admin/**
-                        .requestMatchers(HttpMethod.GET, "/api/cursos/**").permitAll() // Permitimos acceso de lectura a
-                                                                                       // todos los cursos
-                        .requestMatchers(HttpMethod.POST, "/api/cursos/**").hasRole("DOCENTE") // Solo los docentes
-                                                                                               // pueden crear cursos
-                        .requestMatchers("/api/estudiantes/**").hasRole("ESTUDIANTE") // Solo los estudiantes pueden
-                                                                                                    // acceder a /api/estudiantes/**
-                        .requestMatchers("/api/docentes/**").hasRole("DOCENTE") // Solo los docentes pueden acceder a
-                                                                                                  // /api/docentes/**
-                        .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR") // Solo los administradores pueden
-                                                                                                    // acceder a /api/admin/**
-                        .requestMatchers(HttpMethod.GET, "/api/cursos/**").permitAll() // Permitimos acceso de lectura a
-                                                                                                      // todos los cursos
-                        .requestMatchers(HttpMethod.POST, "/api/cursos/**").hasRole("DOCENTE") // Solo los docentes
-                                                                                                       // pueden crear cursos
-                        .anyRequest().authenticated() // Todas las demás peticiones requieren autenticación
-                )
-                .formLogin(form -> form.disable()) // Deshabilitamos el formulario de login por defecto
-                .httpBasic(basic -> basic.disable()) // Deshabilitamos la autenticación básica HTTP por defecto
-                .logout(logout -> logout.permitAll()) // Permitimos acceso al logout sin autenticación
-                .authenticationProvider(authenticationProvider());
+            .csrf(csrf -> csrf.disable()) // Desactivar CSRF (solo si no usás cookies/sesiones)
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            )
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable())
+            .logout(logout -> logout.permitAll())
+            .authenticationProvider(authenticationProvider());
 
         return http.build();
     }
