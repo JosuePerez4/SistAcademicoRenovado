@@ -14,8 +14,6 @@ import java.util.Optional;
 public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
     boolean existsByEstudianteAndSemestre(Estudiante estudiante, Semestre semestre);
 
-    List<Matricula> findByEstudianteId(long estudianteId);
-
     List<Matricula> findBySemestreId(long semestreId);
 
     List<Matricula> findByEstado(EstadoMatricula estado);
@@ -23,4 +21,8 @@ public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
     Optional<Matricula> findByEstudianteIdAndEstado(Long estudianteId, EstadoMatricula estado);
 
     boolean existsByEstudianteAndSemestreAndEstado(Estudiante estudiante, Semestre semestre, EstadoMatricula estado);
+
+    Optional<Matricula> findByEstudianteIdAndSemestreId(Long estudianteId, Long semestreId);
+
+    List<Matricula> findByEstudianteId(Long estudianteId);
 }
