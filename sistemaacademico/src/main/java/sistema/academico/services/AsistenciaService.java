@@ -3,14 +3,18 @@ package sistema.academico.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import sistema.academico.DTO.EstudianteAsistenciaResponseDTO;
 import sistema.academico.DTO.ObtenerAsistenciasEntreFechasRequestDTO;
 import sistema.academico.DTO.ObtenerAsistenciasPorInscripcionResponseDTO;
 import sistema.academico.DTO.RegistrarAsistenciaRequestDTO;
 import sistema.academico.DTO.RegistrarAsistenciaResponseDTO;
+import sistema.academico.DTO.ReporteAsistenciaCursoResponseDTO;
 import sistema.academico.entities.Asistencia;
+import sistema.academico.entities.Curso;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.enums.AsistenciaEstado;
 import sistema.academico.repository.AsistenciaRepository;
+import sistema.academico.repository.CursoRepository;
 import sistema.academico.repository.InscripcionRepository;
 
 import java.time.LocalDate;
@@ -25,6 +29,8 @@ public class AsistenciaService {
 
     @Autowired
     private AsistenciaRepository asistenciaRepository;
+    @Autowired
+    private CursoRepository cursoRepository;
     @Autowired
     private InscripcionRepository inscripcionRepository;
 
@@ -83,7 +89,8 @@ public class AsistenciaService {
     }
 
     // 3. Obtener asistencias entre fechas
-    public List<ObtenerAsistenciasPorInscripcionResponseDTO> obtenerAsistenciasPorRango(ObtenerAsistenciasEntreFechasRequestDTO request) {
+    public List<ObtenerAsistenciasPorInscripcionResponseDTO> obtenerAsistenciasPorRango(
+            ObtenerAsistenciasEntreFechasRequestDTO request) {
         Long inscripcionId = request.getInscripcionId();
         LocalDate inicio = request.getFechaInicio();
         LocalDate fin = request.getFechaFin();
@@ -96,7 +103,7 @@ public class AsistenciaService {
         if (fin.isBefore(inicio)) {
             throw new RuntimeException("La fecha de fin no puede ser anterior a la fecha de inicio.");
         }
-        
+
         Inscripcion inscripcion = obtenerInscripcion(inscripcionId);
         List<Asistencia> asistencias = asistenciaRepository.findByInscripcionAndFechaBetween(inscripcion, inicio, fin);
 
@@ -181,21 +188,40 @@ public class AsistenciaService {
     }
 
     // 9. Reporte general de asistencias por curso
-    public Map<String, Long> generarReporteAsistenciaPorCurso(Long cursoId) {
-        List<Inscripcion> inscripciones = inscripcionRepository.findByCursoId(cursoId);
-        Map<String, Long> reporte = new HashMap<>();
+    public ReporteAsistenciaCursoResponseDTO generarReporteAsistenciaPorCurso(Long cursoId) {
+        Curso curso = cursoRepository.findById(cursoId)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + cursoId));
 
-        for (Inscripcion inscripcion : inscripciones) {
-            Long totalAsistencias = asistenciaRepository.findByInscripcion(inscripcion).stream()
-                    .filter(a -> a.getEstado() == AsistenciaEstado.PRESENTE)
-                    .count();
-            reporte.put(inscripcion.getMatricula().getEstudiante().getNombre(), totalAsistencias);
+        List<Asistencia> asistenciasPresentes = asistenciaRepository
+                .findByInscripcionCursoIdAndEstado(cursoId, AsistenciaEstado.PRESENTE);
+
+        // Mapa para contar asistencias por estudiante
+        Map<String, Long> conteoPorEstudiante = new HashMap<>();
+
+        for (Asistencia asistencia : asistenciasPresentes) {
+            String nombreEstudiante = asistencia.getInscripcion().getMatricula().getEstudiante().getNombre() + " "
+                    + asistencia.getInscripcion().getMatricula().getEstudiante().getApellido();
+
+            if (conteoPorEstudiante.containsKey(nombreEstudiante)) {
+                conteoPorEstudiante.put(nombreEstudiante, conteoPorEstudiante.get(nombreEstudiante) + 1);
+            } else {
+                conteoPorEstudiante.put(nombreEstudiante, 1L);
+            }
         }
 
-        return reporte;
+        // Convertimos el mapa a una lista de DTOs
+        List<EstudianteAsistenciaResponseDTO> listaAsistencias = new ArrayList<>();
+
+        for (Map.Entry<String, Long> entry : conteoPorEstudiante.entrySet()) {
+            EstudianteAsistenciaResponseDTO dto = new EstudianteAsistenciaResponseDTO(entry.getKey(), entry.getValue());
+            listaAsistencias.add(dto);
+        }
+
+        return new ReporteAsistenciaCursoResponseDTO(curso.getNombre(), listaAsistencias);
     }
 
-    // 10. Obtener detalles de todas las asistencias registradas en una fecha específica
+    // 10. Obtener detalles de todas las asistencias registradas en una fecha
+    // específica
     public List<ObtenerAsistenciasPorInscripcionResponseDTO> obtenerAsistenciasPorFecha(LocalDate fecha) {
         List<Asistencia> asistencias = asistenciaRepository.findByFecha(fecha);
         List<ObtenerAsistenciasPorInscripcionResponseDTO> respuestas = new ArrayList<>();

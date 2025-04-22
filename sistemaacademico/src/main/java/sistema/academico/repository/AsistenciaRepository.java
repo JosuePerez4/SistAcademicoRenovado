@@ -17,6 +17,8 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
 
     List<Asistencia> findByInscripcion(Inscripcion inscripcion);
 
+    List<Asistencia> findByInscripcionId(Long inscripcionId);
+
     List<Asistencia> findByInscripcionAndFecha(Inscripcion inscripcion, LocalDate fecha);
 
     List<Asistencia> findByFecha(LocalDate fecha);
@@ -29,4 +31,7 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
     List<Asistencia> findByInscripcionAndEstado(Inscripcion inscripcion, AsistenciaEstado estado);
 
     boolean existsByInscripcionAndFecha(Inscripcion inscripcion, LocalDate fecha);
+
+    List<Asistencia> findByInscripcionCursoIdAndEstado(Long cursoId, AsistenciaEstado estado);
+
 }

@@ -8,17 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.security.PermitAll;
 import sistema.academico.DTO.ObtenerAsistenciasEntreFechasRequestDTO;
 import sistema.academico.DTO.ObtenerAsistenciasPorInscripcionResponseDTO;
 import sistema.academico.DTO.RegistrarAsistenciaRequestDTO;
 import sistema.academico.DTO.RegistrarAsistenciaResponseDTO;
+import sistema.academico.DTO.ReporteAsistenciaCursoResponseDTO;
 import sistema.academico.enums.AsistenciaEstado;
 import sistema.academico.services.AsistenciaService;
 
 @RestController
 @RequestMapping("/api/asistencia")
-@PermitAll
 public class AsistenciaController {
 
     @Autowired
@@ -78,14 +77,17 @@ public class AsistenciaController {
 
     // 9. Reporte general de asistencias por curso
     @GetMapping("/reporte-por-curso/{cursoId}")
-    public ResponseEntity<Map<String, Long>> generarReporteAsistenciaPorCurso(@PathVariable Long cursoId) {
-        return ResponseEntity.ok(asistenciaService.generarReporteAsistenciaPorCurso(cursoId));
+    public ResponseEntity<ReporteAsistenciaCursoResponseDTO> generarReporteAsistenciaPorCurso(
+            @PathVariable Long cursoId) {
+        ReporteAsistenciaCursoResponseDTO reporte = asistenciaService.generarReporteAsistenciaPorCurso(cursoId);
+        return ResponseEntity.ok(reporte);
     }
 
     // 10. Obtener detalles de todas las asistencias registradas en una fecha
     // específica
     @GetMapping("/por-fecha")
-    public ResponseEntity<List<ObtenerAsistenciasPorInscripcionResponseDTO>> obtenerAsistenciasPorFecha(@RequestParam LocalDate fecha) {
+    public ResponseEntity<List<ObtenerAsistenciasPorInscripcionResponseDTO>> obtenerAsistenciasPorFecha(
+            @RequestParam LocalDate fecha) {
         return ResponseEntity.ok(asistenciaService.obtenerAsistenciasPorFecha(fecha));
     }
 
