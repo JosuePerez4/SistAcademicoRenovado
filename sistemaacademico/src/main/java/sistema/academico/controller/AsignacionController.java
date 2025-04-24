@@ -1,24 +1,33 @@
 package sistema.academico.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sistema.academico.DTO.AsignacionCursoDTO;
+import sistema.academico.DTO.AsignacionCursoResponseDTO;
 import sistema.academico.services.AsignacionService;
 
+import java.util.List;
+
 @RestController
+<<<<<<< Updated upstream
 @RequestMapping("/api/asignacion")
+=======
+@RequestMapping("/asignaciones")
+@RequiredArgsConstructor
+>>>>>>> Stashed changes
 public class AsignacionController {
 
-    @Autowired
     private final AsignacionService asignacionService;
-    
-    public AsignacionController(AsignacionService asignacionService) {
-        this.asignacionService = asignacionService;
+
+    @PostMapping
+    public ResponseEntity<AsignacionCursoResponseDTO> asignarCurso(@RequestBody AsignacionCursoDTO dto) {
+        return new ResponseEntity<>(asignacionService.asignarCurso(dto), HttpStatus.CREATED);
     }
 
-    @PostMapping("/automatica")
-    public ResponseEntity<String> asignar() {
-        asignacionService.asignarCursosAutomaticamente();
-        return ResponseEntity.ok("Asignación automática completada");
+    @GetMapping
+    public ResponseEntity<List<AsignacionCursoResponseDTO>> listarAsignaciones() {
+        return ResponseEntity.ok(asignacionService.listarAsignaciones());
     }
 }
