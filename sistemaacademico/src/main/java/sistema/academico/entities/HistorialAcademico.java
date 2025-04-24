@@ -19,20 +19,21 @@ public class HistorialAcademico {
     @JoinColumn(name = "estudiante_id")
     private Estudiante estudiante;
 
-    @OneToMany
-    private List<Calificacion> calificaciones;
+    @OneToOne
+    @JoinColumn(name = "matricula_id")
+    private Matricula matricula;
 
     @ManyToMany
-    @JoinTable(name = "historial_cursos_aprobados",
-        joinColumns = @JoinColumn(name = "historial_id"),
-        inverseJoinColumns = @JoinColumn(name = "curso_id"))
+    @JoinTable(name = "historial_cursos_aprobados", joinColumns = @JoinColumn(name = "historial_id"), inverseJoinColumns = @JoinColumn(name = "curso_id"))
     private List<Curso> cursosAprobados;
 
     @ManyToMany
-    @JoinTable(name = "historial_cursos_reprobados",
-        joinColumns = @JoinColumn(name = "historial_id"),
-        inverseJoinColumns = @JoinColumn(name = "curso_id"))
+    @JoinTable(name = "historial_cursos_reprobados", joinColumns = @JoinColumn(name = "historial_id"), inverseJoinColumns = @JoinColumn(name = "curso_id"))
     private List<Curso> cursosReprobados;
+
+    @ManyToMany
+    @JoinTable(name = "historial_cursos_en_proceso", joinColumns = @JoinColumn(name = "historial_id"), inverseJoinColumns = @JoinColumn(name = "curso_id"))
+    private List<Curso> cursosEnProceso;
 
     @Column(name = "promedio_general")
     private float promedioGeneral;
@@ -48,4 +49,7 @@ public class HistorialAcademico {
 
     @Column(name = "total_materias_reprobadas")
     private int totalMateriasReprobadas;
+
+    @Column(name = "total_materias_en_proceso")
+    private int TotalMateriasEnProceso;
 }
