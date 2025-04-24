@@ -1,62 +1,56 @@
 package sistema.academico.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sistema.academico.entities.*;
-import sistema.academico.repository.*;
+import sistema.academico.DTO.AsignacionCursoDTO;
+import sistema.academico.DTO.AsignacionCursoResponseDTO;
+import sistema.academico.entities.AsignacionCurso;
+import sistema.academico.entities.Curso;
+import sistema.academico.entities.Docente;
+import sistema.academico.repository.AsignacionCursoRepository;
+import sistema.academico.repository.CursoRepository;
+import sistema.academico.repository.DocenteRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AsignacionService {
 
-    @Autowired
-    private final CursoRepository cursoRepository;
-    @Autowired
-    private final DocenteRepository docenteRepository;
-    public AsignacionService(CursoRepository cursoRepository, DocenteRepository docenteRepository) {
-        this.cursoRepository = cursoRepository;
-        this.docenteRepository = docenteRepository;
+    private final AsignacionCursoRepository asignacionRepo;
+    private final DocenteRepository docenteRepo;
+    private final CursoRepository cursoRepo;
+
+    public AsignacionCursoResponseDTO asignarCurso(AsignacionCursoDTO dto) {
+        Docente docente = docenteRepo.findById(dto.getDocenteId())
+                .orElseThrow(() -> new RuntimeException("Docente no encontrado"));
+
+        Curso curso = cursoRepo.findById(dto.getCursoId())
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        AsignacionCurso asignacion = new AsignacionCurso();
+        asignacion.setDocente(docente);
+        asignacion.setCurso(curso);
+        asignacion.setHorasAsignadas(dto.getHorasAsignadas());
+
+        asignacionRepo.save(asignacion);
+
+        return mapToResponseDTO(asignacion);
     }
 
-    public void asignarCursosAutomaticamente() {
-        List<Curso> cursosSinDocente = cursoRepository.findByDocenteIsNull();
-        List<Docente> docentes = docenteRepository.findAll();
-
-        for (Curso curso : cursosSinDocente) {
-            for (Docente docente : docentes) {
-                if (puedeAsignarse(docente, curso)) {
-                    curso.setDocente(docente);
-                    docente.getCursos().add(curso);
-                    docente.setCargaHoraria(docente.getCargaHoraria() + curso.getMateria().getHoras());
-                    cursoRepository.save(curso);
-                    break;
-                }
-            }
-        }
+    public List<AsignacionCursoResponseDTO> listarAsignaciones() {
+        return asignacionRepo.findAll().stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    private boolean puedeAsignarse(Docente docente, Curso curso) {
-        int horasTotales = docente.getCargaHoraria() + curso.getMateria().getHoras();
-        if (horasTotales > 40)
-            return false; // carga horaria máxima
-
-        for (Curso asignado : docente.getCursos()) {
-            for (Horario hExistente : asignado.getHorarios()) {
-                for (Horario hNuevo : curso.getHorarios()) {
-                    if (conflictoHorario(hExistente, hNuevo)) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private boolean conflictoHorario(Horario h1, Horario h2) {
-        if (!h1.getDiaSemana().equalsIgnoreCase(h2.getDiaSemana()))
-            return false;
-        return h1.getHoraInicio().before(h2.getHoraFin()) && h2.getHoraInicio().before(h1.getHoraFin());
+    private AsignacionCursoResponseDTO mapToResponseDTO(AsignacionCurso a) {
+        AsignacionCursoResponseDTO dto = new AsignacionCursoResponseDTO();
+        dto.setId(a.getId());
+        dto.setNombreCurso(a.getCurso().getNombre());
+        dto.setNombreDocente(a.getDocente().getNombre());
+        dto.setHorasAsignadas(a.getHorasAsignadas());
+        return dto;
     }
 }
