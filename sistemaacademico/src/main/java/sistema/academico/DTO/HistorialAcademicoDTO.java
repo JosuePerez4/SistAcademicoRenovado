@@ -16,6 +16,7 @@ public class HistorialAcademicoDTO {
     private String estadoAcademicoActual;
     private int totalMateriasAprobadas;
     private int totalMateriasReprobadas;
+    private int totalMateriasEnProceso;
     private List<CursoResponseDTO> cursosAprobados;
     private List<CursoResponseDTO> cursosReprobados;
     private List<CursoResponseDTO> cursosEnProceso;
