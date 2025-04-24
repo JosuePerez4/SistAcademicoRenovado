@@ -20,12 +20,7 @@ import sistema.academico.repository.InscripcionRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -39,40 +34,6 @@ public class AsistenciaService {
     @Autowired
     private InscripcionRepository inscripcionRepository;
 
-    // 1. Registrar una asistencia
-    public RegistrarAsistenciaResponseDTO registrarAsistencia(RegistrarAsistenciaRequestDTO request) {
-        Long inscripcionId = request.getInscripcionId();
-        LocalDate fecha = request.getFecha();
-        AsistenciaEstado estado = request.getEstado();
-        String justificacion = request.getJustificacion();
-        if (estado == AsistenciaEstado.JUSTIFICADO && justificacion == null) {
-            throw new RuntimeException("Se requiere justificación para una asistencia justificada.");
-        }
-
-        // Obtener inscripción
-        Inscripcion inscripcion = inscripcionRepository.findById(inscripcionId)
-                .orElseThrow(() -> new RuntimeException("Inscripción no encontrada"));
-
-        // Verificar si existe asistencia
-        if (existeAsistenciaEnFecha(inscripcionId, fecha)) {
-            throw new RuntimeException("Ya existe una asistencia registrada para esta fecha.");
-        }
-
-        // Guardar asistencia
-        Asistencia asistencia = new Asistencia();
-        asistencia.setInscripcion(inscripcion);
-        asistencia.setFecha(fecha);
-        asistencia.setEstado(estado);
-        asistencia.setJustificacion(justificacion);
-        asistenciaRepository.save(asistencia);
-
-        // Devolver respuesta
-        RegistrarAsistenciaResponseDTO response = new RegistrarAsistenciaResponseDTO();
-        response.setId(asistencia.getId());
-        response.setInscripcionId(inscripcionId);
-        response.setEstado(estado.name());
-        response.setJustificacion(justificacion);
-        return response;
     // 1. Registrar una asistencia
     public RegistrarAsistenciaResponseDTO registrarAsistencia(RegistrarAsistenciaRequestDTO request) {
         Long inscripcionId = request.getInscripcionId();
@@ -159,57 +120,6 @@ public class AsistenciaService {
         return respuestas;
     }
 
-    // 4. Obtener solo asistencias justificadas
-    public List<ObtenerAsistenciasPorInscripcionResponseDTO> obtenerAsistenciasJustificadas(Long inscripcionId) {
-        Inscripcion inscripcion = obtenerInscripcion(inscripcionId);
-        List<Asistencia> asistencias = asistenciaRepository.findByInscripcionAndEstado(inscripcion,
-                AsistenciaEstado.JUSTIFICADO);
-
-        List<ObtenerAsistenciasPorInscripcionResponseDTO> respuestas = new ArrayList<>();
-
-        for (Asistencia asistencia : asistencias) {
-            ObtenerAsistenciasPorInscripcionResponseDTO response = new ObtenerAsistenciasPorInscripcionResponseDTO();
-            response.setFecha(asistencia.getFecha().toString());
-            response.setEstado(asistencia.getEstado().name());
-            response.setJustificacion(asistencia.getJustificacion());
-            respuestas.add(response);
-        }
-
-        return respuestas;
-    }
-
-    // 5. Obtener solo ausencias injustificadas
-    public List<ObtenerAsistenciasPorInscripcionResponseDTO> obtenerAusenciasInjustificadas(Long inscripcionId) {
-        Inscripcion inscripcion = obtenerInscripcion(inscripcionId);
-        List<Asistencia> asistencias = asistenciaRepository.findByInscripcionAndEstado(inscripcion,
-                AsistenciaEstado.AUSENTE);
-
-        List<ObtenerAsistenciasPorInscripcionResponseDTO> respuestas = new ArrayList<>();
-
-        for (Asistencia asistencia : asistencias) {
-            ObtenerAsistenciasPorInscripcionResponseDTO response = new ObtenerAsistenciasPorInscripcionResponseDTO();
-            response.setFecha(asistencia.getFecha().toString());
-            response.setEstado(asistencia.getEstado().name());
-            response.setJustificacion(asistencia.getJustificacion());
-            respuestas.add(response);
-        }
-
-        return respuestas;
-    }
-
-    // 6. Contar cuántas veces estuvo en cada estado de asistencia
-    public Map<AsistenciaEstado, Long> contarPorEstado(Long inscripcionId) {
-        Inscripcion inscripcion = obtenerInscripcion(inscripcionId);
-        List<Asistencia> asistencias = asistenciaRepository.findByInscripcion(inscripcion);
-
-        return asistencias.stream()
-                .collect(Collectors.groupingBy(Asistencia::getEstado, Collectors.counting()));
-    }
-
-    // 7. Validar si ya existe asistencia para un día
-    public boolean existeAsistenciaEnFecha(Long inscripcionId, LocalDate fecha) {
-        Inscripcion inscripcion = obtenerInscripcion(inscripcionId);
-        return asistenciaRepository.existsByInscripcionAndFecha(inscripcion, fecha);
     // 4. Obtener solo asistencias justificadas
     public List<ObtenerAsistenciasPorInscripcionResponseDTO> obtenerAsistenciasJustificadas(Long inscripcionId) {
         Inscripcion inscripcion = obtenerInscripcion(inscripcionId);

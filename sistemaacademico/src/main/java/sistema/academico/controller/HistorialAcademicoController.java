@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import sistema.academico.DTO.CalificacionResponseDTO;
 import sistema.academico.DTO.CursoResponseDTO;
 import sistema.academico.DTO.HistorialAcademicoDTO;
 import sistema.academico.DTO.HistorialAcademicoRequestDTO;
+import sistema.academico.DTO.ListaCalificacionesResponseDTO;
 import sistema.academico.DTO.ResumenAcademicoResponseDTO;
 import sistema.academico.entities.Curso;
 import sistema.academico.services.HistorialAcademicoService;
@@ -31,6 +33,12 @@ public class HistorialAcademicoController {
         return historialService.obtenerHistorialesPorEstudiante(estudianteId);
     }
 
+    @GetMapping("/estudiante/{id}/obtener/calificaciones/historial")
+    public List<ListaCalificacionesResponseDTO> obtenerCalificacionesPorEstudiante(
+            @PathVariable("id") Long estudianteId) {
+        return historialService.listarCalificacionesPorEstudiante(estudianteId);
+    }
+
     @GetMapping("/cursos-aprobados/{estudianteId}")
     public List<CursoResponseDTO> obtenerCursosAprobados(@PathVariable Long estudianteId) {
         return historialService.obtenerCursosAprobadosPorEstudiante(estudianteId);
@@ -47,23 +55,35 @@ public class HistorialAcademicoController {
     }
 
     @PostMapping("/{historialId}/agregar-aprobado")
-    public void agregarCursoAprobado(@PathVariable Long historialId, @RequestBody Curso curso) {
-        historialService.agregarCursoAprobado(historialId, curso);
+    public void agregarCursoAprobado(@PathVariable Long historialId, @RequestParam Long cursoId) {
+        historialService.agregarCursoAprobado(historialId, cursoId);
     }
 
     @PostMapping("/{historialId}/agregar-reprobado")
-    public void agregarCursoReprobado(@PathVariable Long historialId, @RequestBody Curso curso) {
-        historialService.agregarCursoReprobado(historialId, curso);
+    public void agregarCursoReprobado(@PathVariable Long historialId, @RequestParam Long cursoId) {
+        historialService.agregarCursoReprobado(historialId, cursoId);
     }
 
     @PostMapping("/{historialId}/agregar-en-proceso")
-    public void agregarCursoEnProceso(@PathVariable Long historialId, @RequestBody Curso curso) {
-        historialService.agregarCursoEnProceso(historialId, curso);
+    public void agregarCursoEnProceso(@PathVariable Long historialId, @RequestParam Long cursoId) {
+        historialService.agregarCursoEnProceso(historialId, cursoId);
     }
 
     @PutMapping("/{historialId}/recalcular-desempeno")
     public HistorialAcademicoDTO recalcularDesempenoAcademico(@PathVariable Long historialId) {
         return historialService.recalcularDesempeñoAcademico(historialId);
+    }
+
+    @PutMapping("/actualizar/{estudianteId}")
+    public ResponseEntity<HistorialAcademicoDTO> actualizarHistorialPorEstudiante(@PathVariable Long estudianteId) {
+        try {
+            HistorialAcademicoDTO historialAcademicoDTO = historialService
+                    .actualizarHistorialPorEstudiante(estudianteId);
+            return ResponseEntity.ok(historialAcademicoDTO);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null); // Si ocurre un error (por ejemplo, no se encuentra el
+                                                           // historial)
+        }
     }
 
     @GetMapping("/resumen/{estudianteId}")

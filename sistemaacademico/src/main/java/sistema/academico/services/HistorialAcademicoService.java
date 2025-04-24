@@ -7,15 +7,20 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import sistema.academico.DTO.CalificacionResponseDTO;
 import sistema.academico.DTO.CursoResponseDTO;
 import sistema.academico.DTO.HistorialAcademicoDTO;
 import sistema.academico.DTO.HistorialAcademicoRequestDTO;
+import sistema.academico.DTO.ListaCalificacionesResponseDTO;
 import sistema.academico.DTO.ResumenAcademicoResponseDTO;
+import sistema.academico.DTO.calificacionesPorEstudianteResponseDTO;
+import sistema.academico.entities.Calificacion;
 import sistema.academico.entities.Curso;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.HistorialAcademico;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.entities.Matricula;
+import sistema.academico.repository.CursoRepository;
 import sistema.academico.repository.EstudianteRepository;
 import sistema.academico.repository.HistorialAcademicoRepository;
 import sistema.academico.repository.MatriculaRepository;
@@ -30,6 +35,9 @@ public class HistorialAcademicoService {
 
         @Autowired
         private MatriculaRepository matriculaRepository;
+
+        @Autowired
+        private CursoRepository cursoRepository;
 
         public HistorialAcademicoDTO crearHistorialAcademico(HistorialAcademicoRequestDTO dto) {
                 Optional<Estudiante> estudianteOpt = estudianteRepository.findById(dto.getEstudianteId());
@@ -58,6 +66,7 @@ public class HistorialAcademicoService {
                                 "En proceso", // estadoAcademicoActual
                                 0, // totalMateriasAprobadas
                                 0, // totalMateriasReprobadas
+                                0, // totalMateriasEnProceso
                                 new ArrayList<>(), // cursosAprobados
                                 new ArrayList<>(), // cursosReprobados
                                 new ArrayList<>() // cursosEnProceso
@@ -107,6 +116,7 @@ public class HistorialAcademicoService {
                                         historial.getEstadoAcademicoActual(),
                                         historial.getTotalMateriasAprobadas(),
                                         historial.getTotalMateriasReprobadas(),
+                                        historial.getTotalMateriasEnProceso(),
                                         cursosAprobados,
                                         cursosReprobados,
                                         cursosEnProceso);
@@ -152,87 +162,156 @@ public class HistorialAcademicoService {
         }
 
         // Agregar curso aprobado
-        public void agregarCursoAprobado(Long historialId, Curso curso) {
+        public void agregarCursoAprobado(Long historialId, Long cursoId) {
                 HistorialAcademico historial = historialAcademicoRepository.findById(historialId).orElseThrow();
+
+                Curso curso = cursoRepository.findById(cursoId)
+                                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+                // Verificar si el curso ya está en la lista de cursos aprobados
+                if (historial.getCursosAprobados().stream().anyMatch(c -> c.getId().equals(cursoId))) {
+                        throw new RuntimeException("El curso ya está en la lista de cursos aprobados");
+                }
+
                 historial.getCursosAprobados().add(curso);
                 historialAcademicoRepository.save(historial);
         }
 
         // Agregar curso reprobado
-        public void agregarCursoReprobado(Long historialId, Curso curso) {
+        public void agregarCursoReprobado(Long historialId, Long cursoId) {
                 HistorialAcademico historial = historialAcademicoRepository.findById(historialId).orElseThrow();
+                Curso curso = cursoRepository.findById(cursoId)
+                                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+                // Verificar si el curso ya está en la lista de cursos reprobados
+                if (historial.getCursosReprobados().stream().anyMatch(c -> c.getId().equals(cursoId))) {
+                        throw new RuntimeException("El curso ya está en la lista de cursos reprobados");
+                }
                 historial.getCursosReprobados().add(curso);
                 historialAcademicoRepository.save(historial);
         }
 
         // Agregar curso en proceso
-        public void agregarCursoEnProceso(Long historialId, Curso curso) {
+        public void agregarCursoEnProceso(Long historialId, Long cursoId) {
                 HistorialAcademico historial = historialAcademicoRepository.findById(historialId).orElseThrow();
+                Curso curso = cursoRepository.findById(cursoId)
+                                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+                // Verificar si el curso ya está en la lista de cursos en proceso
+                if (historial.getCursosEnProceso().stream().anyMatch(c -> c.getId().equals(cursoId))) {
+                        throw new RuntimeException("El curso ya está en la lista de cursos en proceso");
+                }
                 historial.getCursosEnProceso().add(curso);
                 historialAcademicoRepository.save(historial);
         }
 
-        // Recalcular el promedio y actualizar créditos acumulados
+        public List<ListaCalificacionesResponseDTO> listarCalificacionesPorEstudiante(Long estudianteId) {
+                List<HistorialAcademico> historiales = historialAcademicoRepository.findByEstudianteId(estudianteId);
+                List<ListaCalificacionesResponseDTO> resultado = new ArrayList<>();
+
+                for (HistorialAcademico historial : historiales) {
+                        Estudiante estudiante = historial.getEstudiante();
+                        String nombreEstudiante = estudiante.getNombre() + " " + estudiante.getApellido();
+                        String codigoEstudiante = estudiante.getCodigo(); // Asegúrate de tener este campo
+
+                        List<Inscripcion> inscripciones = historial.getMatricula().getInscripciones();
+
+                        for (Inscripcion inscripcion : inscripciones) {
+                                String nombreCurso = inscripcion.getCurso().getNombre();
+                                String codigoCurso = inscripcion.getCurso().getCodigo();
+
+                                List<calificacionesPorEstudianteResponseDTO> calificacionesList = new ArrayList<>();
+
+                                for (Calificacion calificacion : inscripcion.getCalificaciones()) {
+                                        calificacionesList.add(new calificacionesPorEstudianteResponseDTO(
+                                                        calificacion.getNota(),
+                                                        calificacion.getEvaluacion().getTipo().name(),
+                                                        calificacion.getEvaluacion().getDescripcion(),
+                                                        calificacion.getEvaluacion().getFechaCreacion()));
+                                }
+
+                                ListaCalificacionesResponseDTO dto = new ListaCalificacionesResponseDTO(
+                                                nombreEstudiante,
+                                                codigoEstudiante,
+                                                nombreCurso,
+                                                codigoCurso,
+                                                calificacionesList);
+
+                                resultado.add(dto);
+                        }
+                }
+
+                return resultado;
+        }
+
         public HistorialAcademicoDTO recalcularDesempeñoAcademico(Long historialId) {
-                HistorialAcademico historial = historialAcademicoRepository.findById(historialId).orElseThrow();
+                HistorialAcademico historial = historialAcademicoRepository.findById(historialId)
+                                .orElseThrow(() -> new RuntimeException("Historial no encontrado"));
+
                 Estudiante estudiante = historial.getEstudiante();
-                // Se deben obtener todas las inscripciones del estudiante mediante su matricula
 
-                Matricula matricula = historialAcademicoRepository.findMatriculaByEstudianteId(estudiante.getId());
+                // Obtener todas las matrículas ordenadas (más recientes primero)
+                List<Matricula> matriculas = matriculaRepository
+                                .findByEstudianteIdOrderByFechaMatriculaDesc(estudiante.getId());
 
-                List<Inscripcion> inscripciones = matricula.getInscripciones();
-                // Se calcucla el promedio general en base a la nota final de cada curso
-                // independientemente si aprobó o no, y en base a los créditos de cada curso
+                if (matriculas.isEmpty()) {
+                        throw new RuntimeException("El estudiante no tiene matrículas registradas.");
+                }
+
+                List<Inscripcion> todasLasInscripciones = new ArrayList<>();
+                for (Matricula matricula : matriculas) {
+                        todasLasInscripciones.addAll(matricula.getInscripciones());
+                }
+
                 double sumaNotas = 0;
                 int creditosAcumulados = 0;
-                for (Inscripcion inscripcion : inscripciones) {
-                        if (inscripcion.getNotaFinal() != null) {
-                                sumaNotas += inscripcion.getNotaFinal()
-                                                * inscripcion.getCurso().getMateria().getCreditos();
-                                creditosAcumulados += inscripcion.getCurso().getMateria().getCreditos();
-                        }
-                }
-                float promedioGeneral = (float) sumaNotas / inscripciones.size();
 
-                // Cursos aprobados
-                List<Curso> cursosAprobados = null;
-                for (Inscripcion inscripcion : inscripciones) {
-                        if (inscripcion.getNotaFinal() != null && inscripcion.getNotaFinal() >= 3.0) {
-                                cursosAprobados.add(inscripcion.getCurso());
-                        }
-                }
-                // Cursos reprobados
-                List<Curso> cursosReprobados = null;
-                for (Inscripcion inscripcion : inscripciones) {
-                        if (inscripcion.getNotaFinal() != null && inscripcion.getNotaFinal() < 3.0) {
-                                cursosReprobados.add(inscripcion.getCurso());
-                        }
-                }
-                // Cursos en proceso
-                List<Curso> cursosEnProceso = null;
-                for (Inscripcion inscripcion : inscripciones) {
+                List<Curso> cursosAprobados = new ArrayList<>();
+                List<Curso> cursosReprobados = new ArrayList<>();
+                List<Curso> cursosEnProceso = new ArrayList<>();
+
+                for (Inscripcion inscripcion : todasLasInscripciones) {
+                        Curso curso = inscripcion.getCurso();
+                        Integer creditos = curso.getMateria().getCreditos();
+
                         if (inscripcion.getNotaFinal() == null) {
-                                cursosEnProceso.add(inscripcion.getCurso());
+                                cursosEnProceso.add(curso);
+                        } else {
+                                sumaNotas += inscripcion.getNotaFinal();
+
+                                if (inscripcion.getNotaFinal() >= 3.0) {
+                                        cursosAprobados.add(curso);
+                                        creditosAcumulados += creditos;
+                                } else {
+                                        cursosReprobados.add(curso);
+                                }
                         }
                 }
-                // Actualizar el historial académico
+
+                float promedioGeneral = todasLasInscripciones.isEmpty()
+                                ? 0
+                                : (float) sumaNotas / todasLasInscripciones.size();
+
+                // Actualizar historial académico automáticamente
                 historial.setCursosAprobados(cursosAprobados);
                 historial.setCursosReprobados(cursosReprobados);
                 historial.setCursosEnProceso(cursosEnProceso);
-
-                // Actualizar el promedio general y créditos acumulados
-
                 historial.setPromedioGeneral(promedioGeneral);
                 historial.setCreditosAcumulados(creditosAcumulados);
+                historial.setTotalMateriasAprobadas(cursosAprobados.size());
+                historial.setTotalMateriasReprobadas(cursosReprobados.size());
+                historial.setTotalMateriasEnProceso(cursosEnProceso.size());
+
+                historialAcademicoRepository.save(historial); // Guardar los cambios
+
+                // Retornar DTO actualizado
                 return new HistorialAcademicoDTO(
                                 historial.getId(),
-                                historial.getEstudiante().getId(),
-                                historial.getEstudiante().getNombre() + " " + historial.getEstudiante().getApellido(),
+                                estudiante.getId(),
+                                estudiante.getNombre() + " " + estudiante.getApellido(),
                                 promedioGeneral,
                                 creditosAcumulados,
                                 historial.getEstadoAcademicoActual(),
-                                historial.getTotalMateriasAprobadas(),
-                                historial.getTotalMateriasReprobadas(),
+                                cursosAprobados.size(),
+                                cursosReprobados.size(),
+                                cursosEnProceso.size(),
                                 cursosAprobados.stream().map(curso -> new CursoResponseDTO(
                                                 curso.getId(),
                                                 curso.getNombre(),
@@ -248,6 +327,15 @@ public class HistorialAcademicoService {
                                                 curso.getNombre(),
                                                 curso.getCodigo(),
                                                 curso.getMateria().getCreditos())).toList());
+        }
+
+        // Actualizar historial académico por estudiante
+        public HistorialAcademicoDTO actualizarHistorialPorEstudiante(Long estudianteId) {
+                List<HistorialAcademico> historiales = historialAcademicoRepository.findByEstudianteId(estudianteId);
+                if (historiales.isEmpty())
+                        throw new RuntimeException("No se encontró historial para el estudiante");
+
+                return recalcularDesempeñoAcademico(historiales.get(0).getId());
         }
 
         // Generar un resumen general de desempeño por estudiante
