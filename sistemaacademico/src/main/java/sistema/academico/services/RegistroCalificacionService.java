@@ -64,13 +64,17 @@ public class RegistroCalificacionService {
 
             calificacionRepository.save(calificacion);
 
-            actualizarHistorialAcademico(inscripcion.getMatricula().getEstudiante().getId(), nota);
+            /* Corregir */
+
+
+            // actualizarHistorialAcademico(inscripcion.getMatricula().getEstudiante().getId(), nota);
 
             return true;
         }
         return false;
     }
 
+    /*
     @Transactional
     public boolean modificarCalificacion(Long idCalificacion, double nuevaNota) {
         Optional<Calificacion> calificacionOpt = calificacionRepository.findById(idCalificacion);
@@ -85,7 +89,7 @@ public class RegistroCalificacionService {
             return true;
         }
         return false;
-    }
+    }*/
 
     public List<Calificacion> obtenerCalificacionesPorEstudiante(Long idEstudiante) {
         Optional<Estudiante> estudianteOpt = estudianteRepository.findById(idEstudiante);
@@ -126,6 +130,9 @@ public class RegistroCalificacionService {
         return null;
     }
 
+
+    /* 
+    Corregir el método, el historial académico no tiene calificaciones, sino que tiene una lista de cursos aprobados, reprobados y en proceso.
     private void actualizarHistorialAcademico(Long idEstudiante, double nuevaNota) {
         Optional<Estudiante> estudianteOpt = estudianteRepository.findById(idEstudiante);
         if (estudianteOpt.isPresent()) {
@@ -146,7 +153,7 @@ public class RegistroCalificacionService {
                 }
             }
         }
-    }
+    }*/
 
     @Transactional
     public boolean eliminarCalificacion(Long idCalificacion) {

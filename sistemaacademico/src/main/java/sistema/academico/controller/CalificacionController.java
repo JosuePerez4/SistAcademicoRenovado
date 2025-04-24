@@ -37,6 +37,7 @@ public class CalificacionController {
         }
     }
 
+    /* 
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarCalificacion(@PathVariable Long id, @RequestBody CalificacionRequestDTO requestDTO) {
         boolean actualizada = registroCalificacionService.modificarCalificacion(id, requestDTO.getNota());
@@ -45,7 +46,7 @@ public class CalificacionController {
         } else {
             return new ResponseEntity<>("No se encontró la calificación con el ID proporcionado.", HttpStatus.NOT_FOUND);
         }
-    }
+    }*/
 
     @GetMapping("/estudiante/{estudianteId}")
     public ResponseEntity<List<CalificacionEstudianteResponseDTO>> obtenerCalificacionesPorEstudiante(@PathVariable Long estudianteId) {
