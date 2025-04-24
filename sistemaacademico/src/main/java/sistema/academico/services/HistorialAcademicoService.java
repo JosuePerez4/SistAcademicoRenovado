@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+<<<<<<< HEAD
 import sistema.academico.DTO.CalificacionResponseDTO;
 import sistema.academico.DTO.CursoResponseDTO;
 import sistema.academico.DTO.HistorialAcademicoDTO;
@@ -15,12 +16,21 @@ import sistema.academico.DTO.ListaCalificacionesResponseDTO;
 import sistema.academico.DTO.ResumenAcademicoResponseDTO;
 import sistema.academico.DTO.calificacionesPorEstudianteResponseDTO;
 import sistema.academico.entities.Calificacion;
+=======
+import sistema.academico.DTO.CursoResponseDTO;
+import sistema.academico.DTO.HistorialAcademicoDTO;
+import sistema.academico.DTO.HistorialAcademicoRequestDTO;
+import sistema.academico.DTO.ResumenAcademicoResponseDTO;
+>>>>>>> 5e627dfaa2b239a4b261e69fc6fc036a23ca29f3
 import sistema.academico.entities.Curso;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.HistorialAcademico;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.entities.Matricula;
+<<<<<<< HEAD
 import sistema.academico.repository.CursoRepository;
+=======
+>>>>>>> 5e627dfaa2b239a4b261e69fc6fc036a23ca29f3
 import sistema.academico.repository.EstudianteRepository;
 import sistema.academico.repository.HistorialAcademicoRepository;
 import sistema.academico.repository.MatriculaRepository;
@@ -36,6 +46,7 @@ public class HistorialAcademicoService {
         @Autowired
         private MatriculaRepository matriculaRepository;
 
+<<<<<<< HEAD
         @Autowired
         private CursoRepository cursoRepository;
 
@@ -43,6 +54,12 @@ public class HistorialAcademicoService {
                 Optional<Estudiante> estudianteOpt = estudianteRepository.findById(dto.getEstudianteId());
                 Optional<Matricula> matriculaOpt = matriculaRepository.findById(dto.getMatriculaId());
 
+=======
+        public HistorialAcademicoDTO crearHistorialAcademico(HistorialAcademicoRequestDTO dto) {
+                Optional<Estudiante> estudianteOpt = estudianteRepository.findById(dto.getEstudianteId());
+                Optional<Matricula> matriculaOpt = matriculaRepository.findById(dto.getMatriculaId());
+
+>>>>>>> 5e627dfaa2b239a4b261e69fc6fc036a23ca29f3
                 if (estudianteOpt.isEmpty() || matriculaOpt.isEmpty()) {
                         throw new RuntimeException("Estudiante o Matrícula no encontrada");
                 }
@@ -66,7 +83,10 @@ public class HistorialAcademicoService {
                                 "En proceso", // estadoAcademicoActual
                                 0, // totalMateriasAprobadas
                                 0, // totalMateriasReprobadas
+<<<<<<< HEAD
                                 0, // totalMateriasEnProceso
+=======
+>>>>>>> 5e627dfaa2b239a4b261e69fc6fc036a23ca29f3
                                 new ArrayList<>(), // cursosAprobados
                                 new ArrayList<>(), // cursosReprobados
                                 new ArrayList<>() // cursosEnProceso
@@ -116,7 +136,10 @@ public class HistorialAcademicoService {
                                         historial.getEstadoAcademicoActual(),
                                         historial.getTotalMateriasAprobadas(),
                                         historial.getTotalMateriasReprobadas(),
+<<<<<<< HEAD
                                         historial.getTotalMateriasEnProceso(),
+=======
+>>>>>>> 5e627dfaa2b239a4b261e69fc6fc036a23ca29f3
                                         cursosAprobados,
                                         cursosReprobados,
                                         cursosEnProceso);
@@ -172,10 +195,6 @@ public class HistorialAcademicoService {
                         throw new RuntimeException("El curso ya está en la lista de cursos aprobados");
                 }
 
-                historial.getCursosAprobados().add(curso);
-                historialAcademicoRepository.save(historial);
-        }
-
         // Agregar curso reprobado
         public void agregarCursoReprobado(Long historialId, Long cursoId) {
                 HistorialAcademico historial = historialAcademicoRepository.findById(historialId).orElseThrow();
@@ -185,8 +204,6 @@ public class HistorialAcademicoService {
                 if (historial.getCursosReprobados().stream().anyMatch(c -> c.getId().equals(cursoId))) {
                         throw new RuntimeException("El curso ya está en la lista de cursos reprobados");
                 }
-                historial.getCursosReprobados().add(curso);
-                historialAcademicoRepository.save(historial);
         }
 
         // Agregar curso en proceso
@@ -198,9 +215,6 @@ public class HistorialAcademicoService {
                 if (historial.getCursosEnProceso().stream().anyMatch(c -> c.getId().equals(cursoId))) {
                         throw new RuntimeException("El curso ya está en la lista de cursos en proceso");
                 }
-                historial.getCursosEnProceso().add(curso);
-                historialAcademicoRepository.save(historial);
-        }
 
         public List<ListaCalificacionesResponseDTO> listarCalificacionesPorEstudiante(Long estudianteId) {
                 List<HistorialAcademico> historiales = historialAcademicoRepository.findByEstudianteId(estudianteId);
@@ -328,7 +342,6 @@ public class HistorialAcademicoService {
                                                 curso.getCodigo(),
                                                 curso.getMateria().getCreditos())).toList());
         }
-
         // Actualizar historial académico por estudiante
         public HistorialAcademicoDTO actualizarHistorialPorEstudiante(Long estudianteId) {
                 List<HistorialAcademico> historiales = historialAcademicoRepository.findByEstudianteId(estudianteId);
