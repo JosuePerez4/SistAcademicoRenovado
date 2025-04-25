@@ -1,6 +1,7 @@
 package sistema.academico.entities;
 
-import java.sql.Time;
+import java.time.LocalTime;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,8 +14,8 @@ public class Horario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String diaSemana;
-    private Time horaInicio;
-    private Time horaFin;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
     private String aula;
     @ManyToOne
     @JoinColumn(name = "curso_id")

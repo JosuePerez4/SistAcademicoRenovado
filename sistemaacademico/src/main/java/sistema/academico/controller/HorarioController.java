@@ -1,12 +1,15 @@
 package sistema.academico.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import sistema.academico.DTO.HorarioGeneradoDTO;
+import sistema.academico.DTO.HorarioRequestDTO;
 import sistema.academico.entities.Horario;
 import sistema.academico.services.HorarioService;
 
-import java.sql.Time;
 import java.util.List;
 
 @RestController
@@ -16,45 +19,47 @@ public class HorarioController {
     @Autowired
     private HorarioService horarioService;
 
-    // Generar un horario (puedes implementar la lógica en el servicio)
-    @PostMapping("/generar")
-    public ResponseEntity<String> generarHorario() {
-        String resultado = horarioService.generarHorario();
-        return ResponseEntity.ok(resultado != null ? resultado : "Horario generado correctamente.");
+    // Endpoint para generar el horario de un estudiante
+    @GetMapping("/generar/{matriculaId}")
+    public ResponseEntity<List<HorarioGeneradoDTO>> generarHorario(@PathVariable Long matriculaId) {
+        List<HorarioGeneradoDTO> horariosGenerados = horarioService.generarHorario(matriculaId);
+        return new ResponseEntity<>(horariosGenerados, HttpStatus.OK);
     }
 
-    // Validar si hay solapamiento con otro horario
-    @PostMapping("/validarSolapamiento")
-    public ResponseEntity<Boolean> validarSolapamiento(@RequestBody Horario nuevoHorario) {
-        boolean haySolapamiento = horarioService.validarSolapamiento(nuevoHorario);
-        return ResponseEntity.ok(haySolapamiento);
+    // Endpoint para agregar un nuevo horario
+    @PostMapping("/agregar")
+    public ResponseEntity<HorarioGeneradoDTO> agregarHorario(@RequestBody HorarioRequestDTO horarioRequestDTO) {
+        HorarioGeneradoDTO horarioGenerado = horarioService.agregarHorario(horarioRequestDTO);
+        return new ResponseEntity<>(horarioGenerado, HttpStatus.CREATED);
     }
 
-    // Actualizar un horario existente
-    @PutMapping("/actualizar")
-    public ResponseEntity<String> actualizarHorario(
-            @RequestParam String diaSemana,
-            @RequestParam Time horaInicio,
-            @RequestParam String aula,
-            @RequestParam String nuevoDia,
-            @RequestParam Time nuevaHoraInicio,
-            @RequestParam Time nuevaHoraFin,
-            @RequestParam String nuevaAula) {
-        horarioService.actualizarHorario(diaSemana, horaInicio, aula, nuevoDia, nuevaHoraInicio, nuevaHoraFin, nuevaAula);
-        return ResponseEntity.ok("Horario actualizado correctamente.");
+    // Endpoint para actualizar un horario existente
+    @PutMapping("/actualizar/{horarioId}")
+    public ResponseEntity<HorarioGeneradoDTO> actualizarHorario(@PathVariable Long horarioId, 
+            @RequestBody HorarioRequestDTO horarioRequestDTO) {
+        HorarioGeneradoDTO horarioActualizado = horarioService.actualizarHorario(horarioId, horarioRequestDTO);
+        return new ResponseEntity<>(horarioActualizado, HttpStatus.OK);
     }
 
-    // Obtener detalles de un horario
-    @GetMapping("/detalles")
-    public ResponseEntity<String> obtenerDetalles(@RequestBody Horario horario) {
-        String detalles = horarioService.obtenerDetalles(horario);
-        return ResponseEntity.ok(detalles != null ? detalles : "No se encontraron detalles para el horario.");
+    // Endpoint para eliminar un horario
+    @DeleteMapping("/eliminar/{horarioId}")
+    public ResponseEntity<String> eliminarHorario(@PathVariable Long horarioId) {
+        horarioService.eliminarHorario(horarioId);
+        return new ResponseEntity<>("Horario eliminado exitosamente", HttpStatus.NO_CONTENT);
     }
 
-    // Listar horarios por curso
-    @GetMapping("/listarPorCurso/{cursoId}")
-    public ResponseEntity<List<Horario>> listarHorariosPorCurso(@PathVariable Long cursoId) {
-        List<Horario> horarios = horarioService.listarHorariosPorCurso(cursoId);
-        return ResponseEntity.ok(horarios);
+    // Endpoint para listar horarios de un curso
+    @GetMapping("/listar/{cursoId}")
+    public ResponseEntity<List<HorarioGeneradoDTO>> listarHorariosPorCurso(@PathVariable Long cursoId) {
+        List<HorarioGeneradoDTO> horarios = horarioService.listarHorariosPorCurso(cursoId);
+        return new ResponseEntity<>(horarios, HttpStatus.OK);
+    }
+
+    // Endpoint para obtener los detalles de un horario específico
+    @GetMapping("/detalles/{horarioId}")
+    public ResponseEntity<String> obtenerDetallesHorario(@PathVariable Long horarioId) {
+        Horario horario = new Horario();
+        // Asumiendo que obtienes el horario de alguna forma, por ejemplo desde la base de datos
+        return new ResponseEntity<>(horarioService.obtenerDetalles(horario), HttpStatus.OK);
     }
 }
