@@ -169,6 +169,10 @@ public class HistorialAcademicoService {
                 if (historial.getCursosAprobados().stream().anyMatch(c -> c.getId().equals(cursoId))) {
                         throw new RuntimeException("El curso ya está en la lista de cursos aprobados");
                 }
+                // Agregar curso a la lista de cursos aprobados
+                historial.getCursosAprobados().add(curso);
+                // Actualizar el historial académico
+                historialAcademicoRepository.save(historial);
         }
 
         // Agregar curso reprobado
@@ -180,6 +184,10 @@ public class HistorialAcademicoService {
                 if (historial.getCursosReprobados().stream().anyMatch(c -> c.getId().equals(cursoId))) {
                         throw new RuntimeException("El curso ya está en la lista de cursos reprobados");
                 }
+                // Agregar curso a la lista de cursos reprobados
+                historial.getCursosReprobados().add(curso);
+                // Actualizar el historial académico
+                historialAcademicoRepository.save(historial);
         }
 
         // Agregar curso en proceso
@@ -191,6 +199,10 @@ public class HistorialAcademicoService {
                 if (historial.getCursosEnProceso().stream().anyMatch(c -> c.getId().equals(cursoId))) {
                         throw new RuntimeException("El curso ya está en la lista de cursos en proceso");
                 }
+                // Agregar curso a la lista de cursos en proceso
+                historial.getCursosEnProceso().add(curso);
+                // Actualizar el historial académico
+                historialAcademicoRepository.save(historial);
         }
 
         public List<ListaCalificacionesResponseDTO> listarCalificacionesPorEstudiante(Long estudianteId) {
