@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import sistema.academico.entities.Curso;
 import sistema.academico.entities.Materia;
+import sistema.academico.enums.EstadoCurso;
 
 import java.util.List;
 
@@ -17,5 +18,8 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
     List<Curso> findByMateriaId(Long materiaId);
     List<Curso> findByCupoMaximoLessThanEqual(int cupoMaximo); // Buscar cursos con cupo disponible
     List<Curso> findByDocenteIsNull();
+    List<Curso> findByEstadoCurso(EstadoCurso estadoCurso);
+    List<Curso> findBySemestreAndEstadoCurso(int semestre, EstadoCurso estadoCurso);
+
 }
 
