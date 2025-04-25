@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import sistema.academico.entities.Curso;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.enums.EstadoInscripcion;
 
@@ -23,4 +25,6 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Long> 
     Optional<Inscripcion> findByMatriculaIdAndCursoId(Long matriculaId, Long cursoId);
 
     List<Inscripcion> findByCursoId(Long cursoId);
+
+    List<Inscripcion> findByCurso(Curso curso);
 }

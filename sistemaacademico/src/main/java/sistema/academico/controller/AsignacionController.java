@@ -11,12 +11,8 @@ import sistema.academico.services.AsignacionService;
 import java.util.List;
 
 @RestController
-<<<<<<< Updated upstream
 @RequestMapping("/api/asignacion")
-=======
-@RequestMapping("/asignaciones")
 @RequiredArgsConstructor
->>>>>>> Stashed changes
 public class AsignacionController {
 
     private final AsignacionService asignacionService;

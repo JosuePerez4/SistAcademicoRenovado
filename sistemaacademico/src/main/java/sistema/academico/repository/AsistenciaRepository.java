@@ -7,12 +7,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import sistema.academico.entities.Asistencia;
+import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.enums.AsistenciaEstado;
 
 @Repository
 public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
 
+    List<Asistencia> findByInscripcionMatriculaEstudiante(Estudiante estudiante);
+
+    //List<Asistencia> findByEstudiante(Estudiante estudiante);
 
     List<Asistencia> findByEstado(AsistenciaEstado estado);
 
