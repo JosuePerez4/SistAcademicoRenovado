@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RestController
 @RequestMapping("api/estudiante")
 @CrossOrigin(origins = "*")
+@PreAuthorize("hasRole('ESTUDIANTE') or hasRole('ADMINISTRADOR')") // Aseguramos que solo estudiantes y admins accedan
 public class EstudianteController {
 
     @Autowired
@@ -38,6 +40,7 @@ public class EstudianteController {
 
     // Crear un estudiante
     @PostMapping("/registrar")
+    @PreAuthorize("hasRole('ADMINISTRADOR')") // Solo los administradores pueden registrar estudiantes
     public ResponseEntity<Estudiante> registrarEstudiante(@RequestBody EstudianteRequestDTO dto) {
         ProgramaAcademico programa = programaAcademicoRepository
                 .findById(dto.getProgramaAcademicoId())
@@ -55,7 +58,7 @@ public class EstudianteController {
         estudiante.setCodigo(dto.getCodigo());
         estudiante.setContrasena(dto.getContrasena());
         estudiante.setEstado(dto.isEstado());
-        estudiante.setRol(dto.getRol());
+        // estudiante.setRol(dto.getRol()); // Eliminar esta línea
         estudiante.setPromedio(dto.getPromedio());
         estudiante.setBeca(dto.isBeca());
         estudiante.setFechaIngreso(dto.getFechaIngreso());
@@ -68,7 +71,7 @@ public class EstudianteController {
 
     @PutMapping("actualizar/{codigo}")
     public ResponseEntity<?> actualizarEstudiante(@PathVariable String codigo,
-            @RequestBody EstudianteUpdateDTO estudianteActualizado) {
+                                                 @RequestBody EstudianteUpdateDTO estudianteActualizado) {
 
         Estudiante estudianteEncontrao = estudianteService.buscarPorCodigo(codigo);
 
@@ -93,6 +96,7 @@ public class EstudianteController {
 
     // Eliminar un estudiante
     @DeleteMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')") // Solo los administradores pueden eliminar estudiantes
     public ResponseEntity<String> eliminarEstudiante(@PathVariable("id") long idEstudiante) {
 
         boolean eliminado = estudianteService.eliminarEstudiante(idEstudiante);
@@ -121,7 +125,7 @@ public class EstudianteController {
             dto.setFechaNacimiento(estudiante.getFechaNacimiento().toString());
             dto.setCodigo(estudiante.getCodigo());
             dto.setEstado(estudiante.isEstado());
-            dto.setRol(estudiante.getRol());
+            // dto.setRol(estudiante.getRol()); // Eliminar esta línea
             dto.setPromedio(estudiante.getPromedio());
             dto.setBeca(estudiante.isBeca());
             dto.setFechaIngreso(estudiante.getFechaIngreso().toString());
@@ -152,7 +156,7 @@ public class EstudianteController {
             dto.setFechaNacimiento(estudiante.getFechaNacimiento().toString());
             dto.setCodigo(estudiante.getCodigo());
             dto.setEstado(estudiante.isEstado());
-            dto.setRol(estudiante.getRol());
+            // dto.setRol(estudiante.getRol()); // Eliminar esta línea
             dto.setPromedio(estudiante.getPromedio());
             dto.setBeca(estudiante.isBeca());
             dto.setFechaIngreso(estudiante.getFechaIngreso().toString());
