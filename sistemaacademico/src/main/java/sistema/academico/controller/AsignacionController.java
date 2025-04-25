@@ -13,6 +13,9 @@ import java.util.List;
 @RestController
 <<<<<<< Updated upstream
 @RequestMapping("/api/asignacion")
+
+@RequiredArgsConstructor
+
 =======
 @RequestMapping("/asignaciones")
 @RequiredArgsConstructor

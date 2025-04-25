@@ -41,4 +41,6 @@ public class Curso {
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
     private List<Inscripcion> inscripciones;
 
+    @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
+private List<Evaluacion> evaluaciones;
 }

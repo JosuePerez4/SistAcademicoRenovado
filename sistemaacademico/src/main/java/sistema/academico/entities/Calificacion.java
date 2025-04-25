@@ -1,4 +1,5 @@
 package sistema.academico.entities;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,4 +24,8 @@ public class Calificacion {
     @ManyToOne
     @JoinColumn(name = "evaluacion_id", nullable = false)
     private Evaluacion evaluacion;
+    
+    @ManyToOne
+    @JoinColumn(name = "estudiante_id")
+    private Estudiante estudiante;
 }
