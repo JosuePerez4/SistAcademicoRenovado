@@ -6,8 +6,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sistema.academico.entities.Curso;
+<<<<<<< HEAD
 import sistema.academico.repository.CursoRepository;
 
+=======
+import sistema.academico.repository.*;
+
+import java.util.List;
+>>>>>>> 1c56fcd248a69c2af7ccf873cdd1781ad6d0b53c
 @Service
 public class CursoService {
 

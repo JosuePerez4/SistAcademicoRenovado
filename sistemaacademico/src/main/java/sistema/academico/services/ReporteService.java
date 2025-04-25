@@ -1,82 +1,140 @@
 package sistema.academico.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import sistema.academico.entities.Reporte;
-import sistema.academico.entities.Usuario;
-import sistema.academico.repository.ReporteRepository;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import sistema.academico.DTO.EstudianteAsistenciaResponseDTO;
+import sistema.academico.DTO.ReporteAsistenciaCursoResponseDTO;
+import sistema.academico.DTO.ReporteAsistenciasEstudianteResponseDTO;
+import sistema.academico.DTO.ResumenAcademicoResponseDTO;
+import sistema.academico.entities.Asistencia;
+import sistema.academico.entities.Calificacion;
+import sistema.academico.entities.Curso;
+import sistema.academico.entities.Estudiante;
+import sistema.academico.entities.Inscripcion;
+import sistema.academico.enums.AsistenciaEstado;
+import sistema.academico.repository.AsistenciaRepository;
+import sistema.academico.repository.CalificacionRepository;
+import sistema.academico.repository.CursoRepository;
+import sistema.academico.repository.EstudianteRepository;
+import sistema.academico.repository.InscripcionRepository;
 
 @Service
 public class ReporteService {
 
     @Autowired
-    private ReporteRepository reporteRepository;
+    private EstudianteRepository estudianteRepo;
 
-    // Crear un nuevo reporte
-    public Reporte crearReporte(String titulo, String tipo, String descripcion, Usuario autor) {
-        Reporte reporte = new Reporte();
-        reporte.setTitulo(titulo);
-        reporte.setTipo(tipo);
-        reporte.setDescripcion(descripcion);
-        reporte.setFechaGeneracion(new Date()); // Fecha actual
-        return reporteRepository.save(reporte);
-    }
+    @Autowired
+    private CalificacionRepository calificacionRepo;
 
-    // Obtener todos los reportes
-    public List<Reporte> obtenerTodosLosReportes() {
-        return reporteRepository.findAll();
-    }
+    @Autowired
+    private AsistenciaRepository asistenciaRepo;
 
-    // Buscar reportes por título
-    public List<Reporte> buscarPorTitulo(String titulo) {
-        return reporteRepository.findByTitulo(titulo);
-    }
+    @Autowired
+    private CursoRepository cursoRepo;
 
-    // Buscar reportes por tipo
-    public List<Reporte> buscarPorTipo(String tipo) {
-        return reporteRepository.findByTipo(tipo);
-    }
+    @Autowired
+    private InscripcionRepository inscripcionRepo;
 
-    // Buscar reportes por rango de fechas
-    public List<Reporte> buscarPorRangoDeFechas(Date inicio, Date fin) {
-        return reporteRepository.findByFechaGeneracionBetween(inicio, fin);
-    }
+    @Autowired
+    private HistorialAcademicoService historialAcademicoService;
 
-    // Modificar la descripción de un reporte
-    public boolean modificarDescripcion(Long idReporte, String nuevaDescripcion) {
-        Optional<Reporte> reporteOpt = reporteRepository.findById(idReporte);
-        if (reporteOpt.isPresent()) {
-            Reporte reporte = reporteOpt.get();
-            reporte.setDescripcion(nuevaDescripcion);
-            reporteRepository.save(reporte);
-            return true;
+    public ReporteAsistenciasEstudianteResponseDTO generarReporteEstudiante(Long estudianteId) {
+        Estudiante estudiante = estudianteRepo.findById(estudianteId)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        List<Asistencia> asistencias = asistenciaRepo.findByInscripcionMatriculaEstudiante(estudiante);
+
+        long cantidadAsistencias = asistencias.size();
+        long cantidadAsistenciasPresentes = 0;
+        long cantidadFaltas = 0;
+        long cantidadJustificadas = 0;
+        double porcentajeAsistencia = (cantidadAsistenciasPresentes)/cantidadAsistencias * 100.0;
+
+        for (Asistencia asistencia : asistencias) {
+            if (asistencia.getEstado().equals(AsistenciaEstado.PRESENTE)) {
+                cantidadAsistencias++;
+            } else {
+                if (asistencia.getEstado().equals(AsistenciaEstado.JUSTIFICADO)) {
+                    cantidadJustificadas++;
+                } else {
+                    cantidadFaltas++;
+                }
+            }
         }
-        return false; // Si no se encuentra el reporte
+
+        return new ReporteAsistenciasEstudianteResponseDTO(
+                estudiante.getNombre(),
+                cantidadAsistencias,
+                cantidadAsistenciasPresentes,
+                cantidadFaltas,
+                cantidadJustificadas,
+                porcentajeAsistencia);
     }
 
-    // Eliminar un reporte por ID
-    public boolean eliminarReporte(Long idReporte) {
-        Optional<Reporte> reporteOpt = reporteRepository.findById(idReporte);
-        if (reporteOpt.isPresent()) {
-            reporteRepository.deleteById(idReporte);
-            return true;
+    public Double obtenerPromedioCurso(Long cursoId) {
+        Curso curso = cursoRepo.findById(cursoId)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        List<Inscripcion> inscripciones = inscripcionRepo.findByCurso(curso);
+
+        double sumaNotas = 0;
+        int totalNotas = 0;
+
+        for (Inscripcion inscripcion : inscripciones) {
+            List<Calificacion> calificaciones = inscripcion.getCalificaciones();
+
+            for (Calificacion calificacion : calificaciones) {
+                sumaNotas += calificacion.getNota();
+                totalNotas++;
+            }
         }
-        return false; // Si el reporte no existe
+
+        if (totalNotas == 0) {
+            return 0.0; // O puedes lanzar una excepción o retornar null si prefieres
+        }
+
+        return sumaNotas / totalNotas;
     }
 
-    // Descargar un reporte (simulación de descarga)
-    public String descargarReporte(Long idReporte) {
-        Optional<Reporte> reporteOpt = reporteRepository.findById(idReporte);
-        if (reporteOpt.isPresent()) {
-            Reporte reporte = reporteOpt.get();
-            // Aquí puedes agregar lógica para generar un archivo descargable (PDF, etc.)
-            return "Reporte descargado: " + reporte.getTitulo();
+    public ReporteAsistenciaCursoResponseDTO generarReporteAsistenciaCurso(Long cursoId) {
+        Curso curso = cursoRepo.findById(cursoId)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        List<Inscripcion> inscripciones = inscripcionRepo.findByCurso(curso);
+        List<EstudianteAsistenciaResponseDTO> listaAsistencias = new ArrayList<>();
+
+        for (Inscripcion inscripcion : inscripciones) {
+            List<Asistencia> asistencias = inscripcion.getAsistencias();
+
+            String nombreEstudiante = inscripcion.getMatricula().getEstudiante().getNombre();
+            long cantidadPresentes = 0;
+
+            for (Asistencia asistencia : asistencias) {
+                if (asistencia.getEstado().equals(AsistenciaEstado.PRESENTE)) {
+                    cantidadPresentes++;
+                }
+            }
+
+            EstudianteAsistenciaResponseDTO dto = new EstudianteAsistenciaResponseDTO(
+                    nombreEstudiante,
+                    cantidadPresentes);
+
+            listaAsistencias.add(dto);
         }
-        return "Reporte no encontrado.";
+
+        ReporteAsistenciaCursoResponseDTO response = new ReporteAsistenciaCursoResponseDTO();
+        response.setNombreCurso(curso.getNombre());
+        response.setAsistencias(listaAsistencias);
+
+        return response;
+    }
+
+    public ResumenAcademicoResponseDTO generarResumenAcademico(Long estudianteId) {
+        return historialAcademicoService.generarResumenAcademico(estudianteId);
     }
 }

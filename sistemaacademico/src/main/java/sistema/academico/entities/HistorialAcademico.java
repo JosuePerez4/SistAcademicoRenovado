@@ -15,7 +15,7 @@ public class HistorialAcademico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "estudiante_id")
     private Estudiante estudiante;
 
