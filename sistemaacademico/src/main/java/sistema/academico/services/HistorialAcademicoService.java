@@ -6,8 +6,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import sistema.academico.DTO.CalificacionResponseDTO;
 import sistema.academico.DTO.CursoResponseDTO;
 import sistema.academico.DTO.HistorialAcademicoDTO;
 import sistema.academico.DTO.HistorialAcademicoRequestDTO;
