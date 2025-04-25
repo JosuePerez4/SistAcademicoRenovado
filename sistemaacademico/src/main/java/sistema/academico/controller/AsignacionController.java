@@ -15,11 +15,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AsignacionController {
 
+<<<<<<< Updated upstream
     private final AsignacionService asignacionService;
 
     @PostMapping
     public ResponseEntity<AsignacionCursoResponseDTO> asignarCurso(@RequestBody AsignacionCursoDTO dto) {
         return new ResponseEntity<>(asignacionService.asignarCurso(dto), HttpStatus.CREATED);
+=======
+    @Autowired
+    private final AsignacionService asignacionService;
+    
+    public AsignacionController(AsignacionService asignacionService) {
+        this.asignacionService = asignacionService;
+>>>>>>> Stashed changes
     }
 
     @GetMapping
