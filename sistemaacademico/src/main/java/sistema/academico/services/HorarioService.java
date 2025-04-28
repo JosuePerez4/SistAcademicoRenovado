@@ -2,25 +2,22 @@ package sistema.academico.services;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import sistema.academico.DTO.HorarioGeneradoDTO;
 import sistema.academico.DTO.HorarioRequestDTO;
 import sistema.academico.entities.Curso;
+import sistema.academico.entities.Espacio;
 import sistema.academico.entities.Horario;
 import sistema.academico.entities.Inscripcion;
 import sistema.academico.entities.Matricula;
 import sistema.academico.enums.EstadoCurso;
 import sistema.academico.enums.EstadoInscripcion;
-import sistema.academico.repository.CursoRepository;
-import sistema.academico.repository.HorarioRepository;
-import sistema.academico.repository.InscripcionRepository;
-import sistema.academico.repository.MatriculaRepository;
+import sistema.academico.repository.*;
 
 @Service
 public class HorarioService {
@@ -37,40 +34,37 @@ public class HorarioService {
     @Autowired
     private MatriculaRepository matriculaRepository;
 
+    @Autowired
+    private EspacioRepository espacioRepository;
+
     public List<HorarioGeneradoDTO> generarHorario(Long matriculaId) {
         Matricula matricula = matriculaRepository.findById(matriculaId)
                 .orElseThrow(() -> new RuntimeException("Matrícula no encontrada"));
 
         int semestreEstudiante = matricula.getSemestre().getNumero();
 
-        List<Curso> cursosDisponibles = cursoRepository.findBySemestreAndEstadoCurso(semestreEstudiante,
-                EstadoCurso.ABIERTO);
+        List<Curso> cursosDisponibles = cursoRepository.findBySemestreAndEstadoCurso(
+                semestreEstudiante, EstadoCurso.ABIERTO);
 
         List<HorarioGeneradoDTO> resultado = new ArrayList<>();
         int creditosActuales = 0;
         List<Horario> horariosActuales = new ArrayList<>();
 
         for (Curso curso : cursosDisponibles) {
-            if (creditosActuales >= 21) break;
+            if (creditosActuales >= 21)
+                break;
 
-            int inscritos = curso.getInscripciones().size();
-            if (inscritos >= curso.getCupoMaximo()) continue;
+            if (curso.getInscripciones().size() >= curso.getCupoMaximo())
+                continue;
 
             int creditosCurso = curso.getMateria().getCreditos();
-            if (creditosActuales + creditosCurso > 21) continue;
+            if (creditosActuales + creditosCurso > 21)
+                continue;
 
-            boolean solapado = false;
-            for (Horario nuevoHorario : curso.getHorarios()) {
-                for (Horario horarioExistente : horariosActuales) {
-                    if (nuevoHorario.getDiaSemana().equals(horarioExistente.getDiaSemana()) &&
-                        !(nuevoHorario.getHoraFin().isBefore(horarioExistente.getHoraInicio()) ||
-                          nuevoHorario.getHoraInicio().isAfter(horarioExistente.getHoraFin()))) {
-                        solapado = true;
-                        break;
-                    }
-                }
-                if (solapado) break;
-            }
+            boolean solapado = curso.getHorarios().stream().anyMatch(nuevoHorario -> horariosActuales.stream()
+                    .anyMatch(horarioExistente -> nuevoHorario.getDiaSemana().equals(horarioExistente.getDiaSemana()) &&
+                            nuevoHorario.getHoraInicio().isBefore(horarioExistente.getHoraFin()) &&
+                            nuevoHorario.getHoraFin().isAfter(horarioExistente.getHoraInicio())));
 
             if (!solapado) {
                 Inscripcion nuevaInscripcion = new Inscripcion();
@@ -89,24 +83,27 @@ public class HorarioService {
                     resultado.add(new HorarioGeneradoDTO(
                             curso.getNombre(),
                             curso.getCodigo(),
-                            horario.getAula(),
+                            horario.getEspacio().getNombre(),
                             horario.getDiaSemana(),
                             horario.getHoraInicio(),
                             horario.getHoraFin()));
                 }
             }
         }
-
         return resultado;
     }
 
-    public void actualizarHorario(String diaSemana, java.sql.Time horaInicio, String aula,
-            String nuevoDia, java.sql.Time nuevaHoraInicio, java.sql.Time nuevaHoraFin, String nuevaAula) {
-        // Método vacío para compatibilidad (puedes implementar si lo necesitas)
-    }
+    public HorarioGeneradoDTO obtenerDetalles(Long horarioId) {
+        Horario horario = horarioRepository.findById(horarioId)
+                .orElseThrow(() -> new RuntimeException("Horario no encontrado"));
 
-    public String obtenerDetalles(Horario horario) {
-        return null; // Implementa si necesitas mostrar detalles formateados
+        return new HorarioGeneradoDTO(
+                horario.getCurso().getNombre(),
+                horario.getCurso().getCodigo(),
+                horario.getEspacio().getNombre(),
+                horario.getDiaSemana(),
+                horario.getHoraInicio(),
+                horario.getHoraFin());
     }
 
     public List<HorarioGeneradoDTO> listarHorariosPorCurso(Long cursoId) {
@@ -117,7 +114,7 @@ public class HorarioService {
             horariosDTO.add(new HorarioGeneradoDTO(
                     horario.getCurso().getNombre(),
                     horario.getCurso().getCodigo(),
-                    horario.getAula(),
+                    horario.getEspacio().getNombre(),
                     horario.getDiaSemana(),
                     horario.getHoraInicio(),
                     horario.getHoraFin()));
@@ -130,20 +127,18 @@ public class HorarioService {
         Curso curso = cursoRepository.findById(horarioRequestDTO.getCursoId())
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
+        Espacio espacio = espacioRepository.findById(horarioRequestDTO.getEspacioId())
+                .orElseThrow(() -> new RuntimeException("Espacio no encontrado"));
+
         Horario nuevoHorario = new Horario();
-        nuevoHorario.setDiaSemana(horarioRequestDTO.getDiaSemana());
-        nuevoHorario.setHoraInicio(horarioRequestDTO.getHoraInicio());
-        nuevoHorario.setHoraFin(horarioRequestDTO.getHoraFin());
-        nuevoHorario.setAula(horarioRequestDTO.getAula());
+        nuevoHorario.setDiaSemana(horarioRequestDTO.getDiaSemana().toUpperCase());
+        nuevoHorario.setHoraInicio(LocalTime.parse(horarioRequestDTO.getHoraInicio()));
+        nuevoHorario.setHoraFin(LocalTime.parse(horarioRequestDTO.getHoraFin()));
+        nuevoHorario.setEspacio(espacio);
         nuevoHorario.setCurso(curso);
 
         if (validarSolapamiento(nuevoHorario)) {
-            throw new RuntimeException("El horario se solapa con otro evento en la misma aula.");
-        }
-
-        if (!verificarDisponibilidadAula(nuevoHorario.getAula(), nuevoHorario.getHoraInicio(),
-                nuevoHorario.getHoraFin())) {
-            throw new RuntimeException("La aula seleccionada no está disponible en el horario indicado.");
+            throw new RuntimeException("El horario se solapa con otro evento en el mismo espacio.");
         }
 
         Horario horarioGuardado = horarioRepository.save(nuevoHorario);
@@ -151,7 +146,7 @@ public class HorarioService {
         return new HorarioGeneradoDTO(
                 curso.getNombre(),
                 curso.getCodigo(),
-                horarioGuardado.getAula(),
+                espacio.getNombre(),
                 horarioGuardado.getDiaSemana(),
                 horarioGuardado.getHoraInicio(),
                 horarioGuardado.getHoraFin());
@@ -167,59 +162,39 @@ public class HorarioService {
         Horario horarioExistente = horarioRepository.findById(horarioId)
                 .orElseThrow(() -> new RuntimeException("Horario no encontrado"));
 
-        LocalTime horaInicio = horarioRequestDTO.getHoraInicio();
-        LocalTime horaFin = horarioRequestDTO.getHoraFin();
+        Espacio espacio = espacioRepository.findById(horarioRequestDTO.getEspacioId())
+                .orElseThrow(() -> new RuntimeException("Espacio no encontrado"));
 
-        if (!verificarDisponibilidadAula(horarioRequestDTO.getAula(), horaInicio, horaFin)) {
-            throw new RuntimeException("La aula seleccionada no está disponible en el horario indicado.");
+        horarioExistente.setDiaSemana(horarioRequestDTO.getDiaSemana().toUpperCase());
+        horarioExistente.setHoraInicio(LocalTime.parse(horarioRequestDTO.getHoraInicio()));
+        horarioExistente.setHoraFin(LocalTime.parse(horarioRequestDTO.getHoraFin()));
+        horarioExistente.setEspacio(espacio);
+
+        if (validarSolapamiento(horarioExistente)) {
+            throw new RuntimeException("El horario actualizado se solapa con otro evento.");
         }
-
-        Horario nuevoHorario = new Horario();
-        nuevoHorario.setDiaSemana(horarioRequestDTO.getDiaSemana());
-        nuevoHorario.setHoraInicio(horaInicio);
-        nuevoHorario.setHoraFin(horaFin);
-        nuevoHorario.setAula(horarioRequestDTO.getAula());
-
-        if (validarSolapamiento(nuevoHorario)) {
-            throw new RuntimeException("El horario se solapa con otro evento en la misma aula.");
-        }
-
-        horarioExistente.setDiaSemana(horarioRequestDTO.getDiaSemana());
-        horarioExistente.setHoraInicio(horaInicio);
-        horarioExistente.setHoraFin(horaFin);
-        horarioExistente.setAula(horarioRequestDTO.getAula());
 
         Horario horarioActualizado = horarioRepository.save(horarioExistente);
 
         return new HorarioGeneradoDTO(
-                horarioExistente.getCurso().getNombre(),
-                horarioExistente.getCurso().getCodigo(),
-                horarioActualizado.getAula(),
+                horarioActualizado.getCurso().getNombre(),
+                horarioActualizado.getCurso().getCodigo(),
+                horarioActualizado.getEspacio().getNombre(),
                 horarioActualizado.getDiaSemana(),
                 horarioActualizado.getHoraInicio(),
                 horarioActualizado.getHoraFin());
     }
 
     private boolean validarSolapamiento(Horario nuevoHorario) {
-        List<Horario> horariosExistentes = horarioRepository.findByAulaAndDiaSemana(
-                nuevoHorario.getAula(), nuevoHorario.getDiaSemana());
+        List<Horario> horariosExistentes = horarioRepository.findByEspacioAndDiaSemana(
+                nuevoHorario.getEspacio(), nuevoHorario.getDiaSemana());
 
         for (Horario existente : horariosExistentes) {
-            if (!(nuevoHorario.getHoraFin().isBefore(existente.getHoraInicio()) ||
-                    nuevoHorario.getHoraInicio().isAfter(existente.getHoraFin()))) {
+            if (nuevoHorario.getHoraInicio().isBefore(existente.getHoraFin()) &&
+                    nuevoHorario.getHoraFin().isAfter(existente.getHoraInicio())) {
                 return true;
             }
         }
         return false;
-    }
-
-    private boolean verificarDisponibilidadAula(String aula, LocalTime horaInicio, LocalTime horaFin) {
-        List<Horario> horariosAula = horarioRepository.findByAula(aula);
-        for (Horario horario : horariosAula) {
-            if (!(horaFin.isBefore(horario.getHoraInicio()) || horaInicio.isAfter(horario.getHoraFin()))) {
-                return false;
-            }
-        }
-        return true;
     }
 }

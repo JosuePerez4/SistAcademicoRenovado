@@ -11,7 +11,7 @@ import lombok.*;
 public class HorarioGeneradoDTO {
     private String nombreCurso;
     private String codigoCurso;
-    private String aula;
+    private String nombreEspacio;
     private String diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;

@@ -12,5 +12,5 @@ public class EvaluacionResponseDTO {
     private String descripcion;
     private LocalDate fechaCreacion;
     private LocalDate fechaLimite;
-    private Long cursoId;
+    private String horarioAsignado;
 }
