@@ -17,11 +17,12 @@ public class Horario {
     private String diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;
-    private String aula;
+    @ManyToOne
+    @JoinColumn(name = "espacio_id") // Esta columna será la FK en la tabla horario
+    private Espacio espacio;
     @ManyToOne
     @JoinColumn(name = "curso_id")
     private Curso curso;
-
     @ManyToOne
     @JoinColumn(name = "evaluacion_id")
     private Evaluacion evaluacion;

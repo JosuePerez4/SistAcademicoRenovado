@@ -18,7 +18,7 @@ import java.util.List;
 public class AsignacionController {
 
     @Autowired
-    private final AsignacionService asignacionService;
+    private AsignacionService asignacionService;
 
     @PostMapping
     public ResponseEntity<AsignacionCursoResponseDTO> asignarCurso(@RequestBody AsignacionCursoDTO dto) {

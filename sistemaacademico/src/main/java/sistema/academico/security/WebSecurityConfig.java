@@ -68,7 +68,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/estudiantes/**").hasRole("ESTUDIANTE") // Solo los estudiantes pueden acceder a /api/estudiantes/**
                         .requestMatchers(HttpMethod.GET, "/api/cursos/**").permitAll() // Permitimos acceso de lectura a todos los cursos
                         .requestMatchers(HttpMethod.POST, "/api/cursos/**").hasRole("DOCENTE") // Solo los docentes pueden crear cursos
-                        .anyRequest().authenticated() // Todas las demás peticiones requieren autenticación
+                        .anyRequest().permitAll() // Todas las demás peticiones requieren autenticación
                 )
                 .formLogin(form -> form.disable()) // Deshabilitamos el formulario de login por defecto
                 .httpBasic(basic -> basic.disable()) // Deshabilitamos la autenticación básica HTTP por defecto

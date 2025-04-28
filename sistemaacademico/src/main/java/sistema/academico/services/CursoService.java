@@ -146,7 +146,7 @@ public class CursoService {
                 horarioDTO.setDiaSemana(horario.getDiaSemana());
                 horarioDTO.setHoraInicio(horario.getHoraInicio().toString());
                 horarioDTO.setHoraFin(horario.getHoraFin().toString());
-                horarioDTO.setAula(horario.getAula());
+                horarioDTO.setAula(horario.getEspacio().getNombre());
                 horariosDTO.add(horarioDTO);
             }
         } else {

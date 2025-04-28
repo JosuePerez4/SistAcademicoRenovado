@@ -10,5 +10,5 @@ public class HorarioRequestDTO {
     private String diaSemana;
     private String horaInicio;
     private String horaFin;
-    private String aula;
+    private Long espacioId;
 }

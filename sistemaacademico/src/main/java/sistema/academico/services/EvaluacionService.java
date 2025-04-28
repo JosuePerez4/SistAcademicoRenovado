@@ -6,6 +6,8 @@ import sistema.academico.DTO.*;
 import sistema.academico.entities.Curso;
 import sistema.academico.entities.Evaluacion;
 import sistema.academico.entities.Horario;
+import sistema.academico.entities.Espacio; // Importamos Espacio
+import sistema.academico.enums.TipoEspacio;
 import sistema.academico.repository.*;
 
 import java.time.LocalDate;
@@ -22,6 +24,12 @@ public class EvaluacionService {
 
     @Autowired
     private CursoRepository cursoRepository;
+
+    @Autowired
+    private ReservaEspacioRepository reservaEspacioRepository; // Para verificar las reservas de espacio
+
+    @Autowired
+    private EspacioRepository espacioRepository; // Para obtener los espacios disponibles
 
     // Método para crear evaluación con horario
     public EvaluacionResponseDTO crearEvaluacionConHorario(CrearEvaluacionDTO crearEvaluacionDTO) {
@@ -69,7 +77,13 @@ public class EvaluacionService {
         horarioDTO.setDiaSemana(horario.getDiaSemana());
         horarioDTO.setHoraInicio(horario.getHoraInicio());
         horarioDTO.setHoraFin(horario.getHoraFin());
-        horarioDTO.setAula(horario.getAula());
+        // Asignar el aula al DTO de horario, verificar si el tipo es AULA y no laboratorio
+        if (horario.getEspacio().getTipo() == TipoEspacio.AULA) {
+            horarioDTO.setAula(horario.getEspacio().getNombre());
+        } else {
+            throw new RuntimeException("No se puede asignar un laboratorio como aula para la evaluación.");
+        }
+
         // Incluir el horario asignado en la respuesta
         evaluacionResponseDTO.setHorarioAsignado(horarioDTO.getDiaSemana() + " " +
                 horarioDTO.getHoraInicio() + "-" + horarioDTO.getHoraFin() + " en " + horarioDTO.getAula());
@@ -82,29 +96,24 @@ public class EvaluacionService {
         Curso curso = evaluacion.getCurso();
         // Obtener los horarios disponibles del curso
         List<Horario> horariosDisponibles = curso.getHorarios();
-        /*
-         * Filtrar los horarios disponibles para la evaluación
-         * horariosDisponibles.removeIf(horario -> horario.getEvaluacion() != null);
-         * // Si no hay horarios disponibles, lanzar una excepción o manejar el error
-         * if (horariosDisponibles.isEmpty()) {
-         * throw new
-         * RuntimeException("No hay horarios disponibles para asignar a la evaluación."
-         * );
-         * }
-         */
+
+        // Filtrar los horarios disponibles para la evaluación
+        horariosDisponibles.removeIf(horario -> horario.getEvaluacion() != null);
+        if (horariosDisponibles.isEmpty()) {
+            throw new RuntimeException("No hay horarios disponibles para asignar a la evaluación.");
+        }
 
         // Buscar un horario de 2 horas de duración
         for (Horario horario : horariosDisponibles) {
-            if (horaDuracionEsDosHoras(horario)) {
-                // Si encuentra un horario de 2 horas, asigna el horario
+            if (horaDuracionEsDosHoras(horario) && horario.getEspacio().getTipo() == TipoEspacio.AULA) {
+                // Si encuentra un horario de 2 horas y tiene espacio tipo AULA, asigna el horario
                 return horario;
             }
         }
 
-        // Si no hay horarios de 2 horas, asignamos el primer horario disponible de 1
-        // hora
+        // Si no hay horarios de 2 horas, asignamos el primer horario disponible de 1 hora
         for (Horario horario : horariosDisponibles) {
-            if (horaDuracionEsUnaHora(horario)) {
+            if (horaDuracionEsUnaHora(horario) && horario.getEspacio().getTipo() == TipoEspacio.AULA) {
                 return horario;
             }
         }
