@@ -1,26 +1,28 @@
 package sistema.academico.entities;
 
-import java.time.LocalTime;
-
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "horario")
-public class Horario {
+@Table(name = "comentario_evaluacion")
+public class ComentarioEvaluacion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String diaSemana;
-    private LocalTime horaInicio;
-    private LocalTime horaFin;
-    private String aula;
+
+    private String contenido;
+
+    private LocalDateTime fecha;
+
     @ManyToOne
-    @JoinColumn(name = "curso_id")
-    private Curso curso;
+    @JoinColumn(name = "autor_id")
+    private Usuario autor;
 
     @ManyToOne
     @JoinColumn(name = "evaluacion_id")

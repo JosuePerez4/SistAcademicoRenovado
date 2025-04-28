@@ -24,7 +24,7 @@ public class DocenteService {
     public DocenteResponseDTO registrarDocenteConUsuario(DocenteRegistroRequestDTO dto) {
 
         Docente docente = new Docente();
-    
+
         docente.setEspecialidad(dto.getEspecialidad());
         docente.setCargaHoraria(dto.getCargaHoraria());
         docente.setTituloProfesional(dto.getTituloProfesional());
@@ -41,13 +41,13 @@ public class DocenteService {
         docente.setCodigo(dto.getCodigo());
         docente.setContrasena(dto.getContrasena());
         docente.setEstado(dto.isEstado());
-        docente.setRol(dto.getRol());
+        // docente.setRol(dto.getRol()); // Eliminar esta línea
 
         Docente docenteGuardado = docenteRepository.save(docente);
 
         return mapToResponseDTO(docenteGuardado);
     }
-
+    
     public DocenteResponseDTO actualizarDocente(Long id, DocenteUpdateDTO dto) {
         Optional<Docente> optional = docenteRepository.findById(id);
         if (optional.isEmpty()) {

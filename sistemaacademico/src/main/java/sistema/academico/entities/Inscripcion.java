@@ -38,4 +38,8 @@ public class Inscripcion {
 
     @OneToMany(mappedBy = "inscripcion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asistencia> asistencias;
+
+    @ManyToOne
+    @JoinColumn(name = "estudiante_id")
+    private Estudiante estudiante;
 }

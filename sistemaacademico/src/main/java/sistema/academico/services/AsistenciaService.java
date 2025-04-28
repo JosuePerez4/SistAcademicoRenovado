@@ -1,4 +1,4 @@
-package sistema.academico.services;
+/* package sistema.academico.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -243,3 +243,4 @@ public class AsistenciaService {
                 .orElseThrow(() -> new RuntimeException("Inscripción no encontrada"));
     }
 }
+*/
