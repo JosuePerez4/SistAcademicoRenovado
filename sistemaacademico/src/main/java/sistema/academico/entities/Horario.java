@@ -9,6 +9,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "horario")
 public class Horario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +18,10 @@ public class Horario {
     private LocalTime horaInicio;
     private LocalTime horaFin;
     private String aula;
-    @ManyToOne
     @JoinColumn(name = "curso_id")
     private Curso curso;
+
+    @ManyToOne
+    @JoinColumn(name = "evaluacion_id")
+    private Evaluacion evaluacion;
 }

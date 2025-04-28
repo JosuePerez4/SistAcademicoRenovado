@@ -17,9 +17,9 @@ public interface HorarioRepository extends JpaRepository<Horario, Long> {
 
     List<Horario> findByCursoId(Long cursoId);
 
-    // Buscar horarios por aula y día de la semana
-    List<Horario> findByAulaAndDiaSemana(String aula, String diaSemana);
-
     // Buscar horarios por día de la semana
     List<Horario> findByDiaSemana(String diaSemana);
+
+    // Buscar horarios por aula y día de la semana
+    List<Horario> findByAulaAndDiaSemana(String aula, String diaSemana);
 }

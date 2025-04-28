@@ -1,6 +1,8 @@
 package sistema.academico.services;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sistema.academico.DTO.AsignacionCursoDTO;
 import sistema.academico.DTO.AsignacionCursoResponseDTO;
@@ -15,12 +17,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class AsignacionService {
 
-    private final AsignacionCursoRepository asignacionRepo;
-    private final DocenteRepository docenteRepo;
-    private final CursoRepository cursoRepo;
+    @Autowired
+    private AsignacionCursoRepository asignacionRepo;
+    @Autowired
+    private DocenteRepository docenteRepo;
+    @Autowired
+    private CursoRepository cursoRepo;
 
     public AsignacionCursoResponseDTO asignarCurso(AsignacionCursoDTO dto) {
         Docente docente = docenteRepo.findById(dto.getDocenteId())

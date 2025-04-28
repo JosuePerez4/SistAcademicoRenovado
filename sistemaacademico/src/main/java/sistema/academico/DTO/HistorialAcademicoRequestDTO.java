@@ -1,6 +1,5 @@
 package sistema.academico.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.*;
 
 @Data

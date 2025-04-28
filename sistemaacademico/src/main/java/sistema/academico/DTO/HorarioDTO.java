@@ -2,13 +2,14 @@ package sistema.academico.DTO;
 
 import lombok.*;
 
+import java.time.LocalTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HorarioRequestDTO {
-    private Long cursoId;
+public class HorarioDTO {
     private String diaSemana;
-    private String horaInicio;
-    private String horaFin;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
     private String aula;
 }
