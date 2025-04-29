@@ -37,62 +37,6 @@ public class HorarioService {
     @Autowired
     private EspacioRepository espacioRepository;
 
-    public List<HorarioGeneradoDTO> generarHorario(Long matriculaId) {
-        Matricula matricula = matriculaRepository.findById(matriculaId)
-                .orElseThrow(() -> new RuntimeException("Matrícula no encontrada"));
-
-        int semestreEstudiante = matricula.getSemestre().getNumero();
-
-        List<Curso> cursosDisponibles = cursoRepository.findBySemestreAndEstadoCurso(
-                semestreEstudiante, EstadoCurso.ABIERTO);
-
-        List<HorarioGeneradoDTO> resultado = new ArrayList<>();
-        int creditosActuales = 0;
-        List<Horario> horariosActuales = new ArrayList<>();
-
-        for (Curso curso : cursosDisponibles) {
-            if (creditosActuales >= 21)
-                break;
-
-            if (curso.getInscripciones().size() >= curso.getCupoMaximo())
-                continue;
-
-            int creditosCurso = curso.getMateria().getCreditos();
-            if (creditosActuales + creditosCurso > 21)
-                continue;
-
-            boolean solapado = curso.getHorarios().stream().anyMatch(nuevoHorario -> horariosActuales.stream()
-                    .anyMatch(horarioExistente -> nuevoHorario.getDiaSemana().equals(horarioExistente.getDiaSemana()) &&
-                            nuevoHorario.getHoraInicio().isBefore(horarioExistente.getHoraFin()) &&
-                            nuevoHorario.getHoraFin().isAfter(horarioExistente.getHoraInicio())));
-
-            if (!solapado) {
-                Inscripcion nuevaInscripcion = new Inscripcion();
-                nuevaInscripcion.setCurso(curso);
-                nuevaInscripcion.setMatricula(matricula);
-                nuevaInscripcion.setFechaInscripcion(LocalDate.now());
-                nuevaInscripcion.setEstado(EstadoInscripcion.INSCRITO);
-                nuevaInscripcion.setNotaFinal(null);
-                nuevaInscripcion.setAsistencias(null);
-                inscripcionRepository.save(nuevaInscripcion);
-
-                creditosActuales += creditosCurso;
-                horariosActuales.addAll(curso.getHorarios());
-
-                for (Horario horario : curso.getHorarios()) {
-                    resultado.add(new HorarioGeneradoDTO(
-                            curso.getNombre(),
-                            curso.getCodigo(),
-                            horario.getEspacio().getNombre(),
-                            horario.getDiaSemana(),
-                            horario.getHoraInicio().toString(),
-                            horario.getHoraFin().toString()));
-                }
-            }
-        }
-        return resultado;
-    }
-
     public HorarioGeneradoDTO obtenerDetalles(Long horarioId) {
         Horario horario = horarioRepository.findById(horarioId)
                 .orElseThrow(() -> new RuntimeException("Horario no encontrado"));

@@ -1,5 +1,9 @@
 package sistema.academico.services;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +39,55 @@ public class EspacioService {
         espacioResponseDTO.setDisponible(espacioGuardado.getDisponible());
 
         return espacioResponseDTO;
+    }
+
+    public List<EspacioResponseDTO> obtenerEspaciosDisponibles() {
+        List<Espacio> disponibles = espacioRepository.findByDisponibleTrue();
+        return disponibles.stream().map(espacio -> {
+            EspacioResponseDTO dto = new EspacioResponseDTO();
+            dto.setId(espacio.getId());
+            dto.setNombre(espacio.getNombre());
+            dto.setTipo(espacio.getTipo());
+            dto.setCapacidad(espacio.getCapacidad());
+            dto.setUbicacion(espacio.getUbicacion());
+            dto.setDisponible(espacio.getDisponible());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public EspacioResponseDTO actualizarEspacio(Long id, EspacioRequestDTO dto) {
+        Optional<Espacio> optionalEspacio = espacioRepository.findById(id);
+        if (optionalEspacio.isEmpty()) {
+            throw new RuntimeException("Espacio no encontrado con ID: " + id);
+        }
+
+        Espacio espacio = optionalEspacio.get();
+        espacio.setNombre(dto.getNombre());
+        espacio.setTipo(dto.getTipo());
+        espacio.setCapacidad(dto.getCapacidad());
+        espacio.setUbicacion(dto.getUbicacion());
+        espacio.setDisponible(dto.getDisponible());
+
+        Espacio actualizado = espacioRepository.save(espacio);
+
+        EspacioResponseDTO response = new EspacioResponseDTO();
+        response.setId(actualizado.getId());
+        response.setNombre(actualizado.getNombre());
+        response.setTipo(actualizado.getTipo());
+        response.setCapacidad(actualizado.getCapacidad());
+        response.setUbicacion(actualizado.getUbicacion());
+        response.setDisponible(actualizado.getDisponible());
+
+        return response;
+    }
+
+    public String eliminarEspacio(Long id) {
+        Optional<Espacio> optionalEspacio = espacioRepository.findById(id);
+        if (optionalEspacio.isPresent()) {
+            espacioRepository.deleteById(id);
+            return "Espacio eliminado con éxito";
+        } else {
+            return "Espacio no encontrado con ID: " + id;
+        }
     }
 }

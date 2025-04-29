@@ -48,6 +48,7 @@ public class InscripcionService {
         inscripcion.setCurso(curso);
         inscripcion.setFechaInscripcion(LocalDate.now());
         inscripcion.setEstado(EstadoInscripcion.INSCRITO);
+        inscripcion.setEstudiante(matricula.getEstudiante());
 
         inscripcion = inscripcionRepository.save(inscripcion);
 
