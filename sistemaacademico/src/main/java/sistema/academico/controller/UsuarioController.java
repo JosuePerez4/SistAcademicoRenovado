@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import sistema.academico.DTO.LoginRequest;
+import sistema.academico.DTO.LoginResponse;
 import sistema.academico.entities.Usuario;
 import sistema.academico.services.UsuarioService;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -49,9 +52,8 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> iniciarSesion(@RequestParam String correo, @RequestParam String contrasena) {
-        return usuarioService.iniciarSesion(correo, contrasena) ? ResponseEntity.ok("Inicio de sesión exitoso.") 
-                                                                : ResponseEntity.badRequest().body("Credenciales incorrectas o usuario inactivo.");
+    public LoginResponse iniciarSesion(@RequestBody LoginRequest loginRequest) {
+        return usuarioService.iniciarSesion(loginRequest.getCorreo(), loginRequest.getContrasena());
     }
 
     @GetMapping("/recuperar/{correo}")
