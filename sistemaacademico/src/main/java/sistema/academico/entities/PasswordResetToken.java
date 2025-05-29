@@ -1,47 +1,76 @@
 package sistema.academico.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "password_reset_token")
 public class PasswordResetToken {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
     private String token;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = Usuario.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "usuario_id")
     private Usuario usuario;
 
-    @Column(nullable = false)
-    private Date expiryDate;
+    private LocalDateTime fechaExpiracion;
 
-    // Duración del token 24 horas
-    private static final int EXPIRATION = 60 * 24;
+    private boolean usado;
 
-    public PasswordResetToken(Usuario usuario) {
-        this.usuario = usuario;
-        this.token = UUID.randomUUID().toString();
-        this.expiryDate = calculateExpiryDate(EXPIRATION);
+    public PasswordResetToken() {
     }
 
-    private Date calculateExpiryDate(int expiryTimeInMinutes) {
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.setTime(new java.sql.Timestamp(cal.getTime().getTime()));
-        cal.add(java.util.Calendar.MINUTE, expiryTimeInMinutes);
-        return new Date(cal.getTime().getTime());
+    public PasswordResetToken(String token, Usuario usuario) {
+        this.token = token;
+        this.usuario = usuario;
+        this.fechaExpiracion = LocalDateTime.now().plusHours(24); // Token válido por 24 horas
+        this.usado = false;
+    }
+
+    // Getters y Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public LocalDateTime getFechaExpiracion() {
+        return fechaExpiracion;
+    }
+
+    public void setFechaExpiracion(LocalDateTime fechaExpiracion) {
+        this.fechaExpiracion = fechaExpiracion;
+    }
+
+    public boolean isUsado() {
+        return usado;
+    }
+
+    public void setUsado(boolean usado) {
+        this.usado = usado;
+    }
+
+    public boolean isTokenValido() {
+        return !usado && LocalDateTime.now().isBefore(fechaExpiracion);
     }
 }
