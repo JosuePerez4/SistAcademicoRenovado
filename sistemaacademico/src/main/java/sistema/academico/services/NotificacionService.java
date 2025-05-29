@@ -133,8 +133,8 @@ public class NotificacionService {
                 .orElse("Hora no definida");
     }
 
-    // Método para enviar correos
-    public void enviarCorreo(String destinatario, String asunto, String mensaje) {
+    // Método auxiliar para enviar el correo
+    private void enviarCorreo(String destinatario, String asunto, String mensaje) {
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(destinatario);
         email.setSubject(asunto);
