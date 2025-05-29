@@ -15,11 +15,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class DocenteService {
 
-    private final DocenteRepository docenteRepository;
-    private final UsuarioRepository usuarioRepository;
+    private DocenteRepository docenteRepository;
+    private UsuarioRepository usuarioRepository;
 
     // Registro completo de docente (datos personales + profesionales)
     public DocenteResponseDTO registrarDocenteConUsuario(DocenteRegistroRequestDTO dto) {

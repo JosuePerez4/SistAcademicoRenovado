@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import sistema.academico.DTO.HorarioGeneradoDTO;
 import sistema.academico.DTO.HorarioRequestDTO;
-import sistema.academico.entities.Horario;
 import sistema.academico.services.HorarioService;
 
 import java.util.List;
@@ -18,13 +17,6 @@ public class HorarioController {
 
     @Autowired
     private HorarioService horarioService;
-
-    // Endpoint para generar el horario de un estudiante
-    @GetMapping("/generar/{matriculaId}")
-    public ResponseEntity<List<HorarioGeneradoDTO>> generarHorario(@PathVariable Long matriculaId) {
-        List<HorarioGeneradoDTO> horariosGenerados = horarioService.generarHorario(matriculaId);
-        return new ResponseEntity<>(horariosGenerados, HttpStatus.OK);
-    }
 
     // Endpoint para agregar un nuevo horario
     @PostMapping("/agregar")
@@ -57,9 +49,7 @@ public class HorarioController {
 
     // Endpoint para obtener los detalles de un horario específico
     @GetMapping("/detalles/{horarioId}")
-    public ResponseEntity<String> obtenerDetallesHorario(@PathVariable Long horarioId) {
-        Horario horario = new Horario();
-        // Asumiendo que obtienes el horario de alguna forma, por ejemplo desde la base de datos
-        return new ResponseEntity<>(horarioService.obtenerDetalles(horario), HttpStatus.OK);
+    public ResponseEntity<HorarioGeneradoDTO> obtenerDetallesHorario(@PathVariable Long horarioId) {
+        return new ResponseEntity<>(horarioService.obtenerDetalles(horarioId), HttpStatus.OK);
     }
 }

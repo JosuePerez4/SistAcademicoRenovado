@@ -3,6 +3,7 @@ package sistema.academico.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import sistema.academico.DTO.LoginResponse;
 import sistema.academico.entities.Usuario;
 import sistema.academico.repository.UsuarioRepository;
 
@@ -51,9 +52,15 @@ public class UsuarioService {
     }
 
     // Iniciar sesión
-    public boolean iniciarSesion(String correo, String contrasena) {
+    public LoginResponse iniciarSesion(String correo, String contrasena) {
         Usuario usuario = usuarioRepository.findByCorreo(correo);
-        return usuario != null && usuario.getContrasena().equals(contrasena) && usuario.isEstado();
+        if (usuario != null && usuario.getContrasena().equals(contrasena) && usuario.isEstado()) {
+            return new LoginResponse(usuario.getNombre()+usuario.getApellido(),usuario.getCorreo(), usuario.getRoles().stream()
+                    .map(rol -> rol.getNombre())
+                    .findFirst()
+                    .orElse("Usuario"));
+        }
+        return null;
     }
 
     // Recuperar contraseña (simulación)

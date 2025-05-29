@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "rol")
 @Getter
@@ -22,6 +24,7 @@ public class Rol {
     @Column(nullable = false, unique = true)
     private String nombre;
 
+    @JsonIgnoreProperties("usuarios")
     @ManyToMany(mappedBy = "roles")
     private Set<Usuario> usuarios = new HashSet<>();
 

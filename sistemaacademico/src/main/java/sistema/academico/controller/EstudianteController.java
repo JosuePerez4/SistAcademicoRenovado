@@ -1,8 +1,10 @@
 package sistema.academico.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,9 @@ import sistema.academico.DTO.EstudianteResponseDTO;
 import sistema.academico.DTO.EstudianteUpdateDTO;
 import sistema.academico.entities.Estudiante;
 import sistema.academico.entities.ProgramaAcademico;
+import sistema.academico.entities.Rol;
 import sistema.academico.repository.ProgramaAcademicoRepository;
+import sistema.academico.repository.RolRepository;
 import sistema.academico.services.EstudianteService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +41,9 @@ public class EstudianteController {
 
     @Autowired
     private ProgramaAcademicoRepository programaAcademicoRepository;
+
+    @Autowired
+    private RolRepository rolRepository;
 
     // Crear un estudiante
     @PostMapping("/registrar")
@@ -58,7 +65,15 @@ public class EstudianteController {
         estudiante.setCodigo(dto.getCodigo());
         estudiante.setContrasena(dto.getContrasena());
         estudiante.setEstado(dto.isEstado());
-        // estudiante.setRol(dto.getRol()); // Eliminar esta línea
+
+        // Buscar el rol existente
+        Rol rolEstudiante = rolRepository.findByNombre("ESTUDIANTE")
+                .orElseThrow(() -> new RuntimeException("Rol 'ESTUDIANTE' no encontrado"));
+        estudiante.agregarRol(rolEstudiante);
+        Set<Rol> roles = new HashSet<>();
+        roles.add(rolEstudiante);
+        estudiante.agregarRol(rolEstudiante);
+        estudiante.setRoles(roles);
         estudiante.setPromedio(dto.getPromedio());
         estudiante.setBeca(dto.isBeca());
         estudiante.setFechaIngreso(dto.getFechaIngreso());
@@ -71,7 +86,7 @@ public class EstudianteController {
 
     @PutMapping("actualizar/{codigo}")
     public ResponseEntity<?> actualizarEstudiante(@PathVariable String codigo,
-                                                 @RequestBody EstudianteUpdateDTO estudianteActualizado) {
+            @RequestBody EstudianteUpdateDTO estudianteActualizado) {
 
         Estudiante estudianteEncontrao = estudianteService.buscarPorCodigo(codigo);
 

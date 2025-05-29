@@ -44,8 +44,8 @@ public class Usuario {
     @Column(nullable = false)
     private String contrasena;
     private boolean estado;
-    
-    @ManyToMany
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "rol_id"))
     private Set<Rol> roles = new HashSet<>();
 

@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AsignacionCursoResponseDTO {
-    private Long id;
-    private String nombreDocente;
-    private String nombreCurso;
-    private int horasAsignadas;
+public class LoginResponse {
+    private String nombre;
+    private String correo;
+    private String rol;
 }

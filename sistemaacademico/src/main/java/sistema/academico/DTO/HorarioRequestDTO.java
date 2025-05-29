@@ -1,8 +1,5 @@
 package sistema.academico.DTO;
 
-import java.sql.Time;
-import java.time.LocalTime;
-
 import lombok.*;
 
 @Data
@@ -11,7 +8,7 @@ import lombok.*;
 public class HorarioRequestDTO {
     private Long cursoId;
     private String diaSemana;
-    private LocalTime horaInicio;
-    private LocalTime horaFin;
-    private String aula;
+    private String horaInicio;
+    private String horaFin;
+    private Long espacioId;
 }

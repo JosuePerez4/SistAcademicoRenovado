@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -15,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableScheduling
 public class WebSecurityConfig {
 
     @Autowired
@@ -66,7 +68,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/estudiantes/**").hasRole("ESTUDIANTE") // Solo los estudiantes pueden acceder a /api/estudiantes/**
                         .requestMatchers(HttpMethod.GET, "/api/cursos/**").permitAll() // Permitimos acceso de lectura a todos los cursos
                         .requestMatchers(HttpMethod.POST, "/api/cursos/**").hasRole("DOCENTE") // Solo los docentes pueden crear cursos
-                        .anyRequest().authenticated() // Todas las demás peticiones requieren autenticación
+                        .anyRequest().permitAll() // Todas las demás peticiones requieren autenticación
                 )
                 .formLogin(form -> form.disable()) // Deshabilitamos el formulario de login por defecto
                 .httpBasic(basic -> basic.disable()) // Deshabilitamos la autenticación básica HTTP por defecto
