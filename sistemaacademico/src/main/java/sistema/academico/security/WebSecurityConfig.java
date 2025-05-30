@@ -3,8 +3,6 @@ package sistema.academico.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -16,29 +14,13 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableScheduling
 public class WebSecurityConfig {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
     @Bean
-    public PasswordEncoder plainTextPasswordEncoder() {
-        return new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence rawPassword) {
-                return rawPassword.toString(); // No codifica
-            }
-
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                return rawPassword.toString().equals(encodedPassword); // Compara en texto plano
-            }
-        };
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -46,7 +28,7 @@ public class WebSecurityConfig {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(plainTextPasswordEncoder()); // Usar el codificador de texto plano
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
@@ -58,22 +40,12 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Deshabilitamos CSRF por ahora (considerar habilitarlo en producción)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll() // Permitir acceso a v3 API docs
-                        .requestMatchers("/swagger-ui/**").permitAll() // Permitir acceso a Swagger UI
-                        .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR") // Solo los administradores pueden acceder a /api/admin/**
-                        .requestMatchers("/api/docentes/**").hasRole("DOCENTE") // Solo los docentes pueden acceder a /api/docentes/**
-                        .requestMatchers("/api/estudiantes/**").hasRole("ESTUDIANTE") // Solo los estudiantes pueden acceder a /api/estudiantes/**
-                        .requestMatchers(HttpMethod.GET, "/api/cursos/**").permitAll() // Permitimos acceso de lectura a todos los cursos
-                        .requestMatchers(HttpMethod.POST, "/api/cursos/**").hasRole("DOCENTE") // Solo los docentes pueden crear cursos
-                        .anyRequest().permitAll() // Todas las demás peticiones requieren autenticación
-                )
-                .formLogin(form -> form.disable()) // Deshabilitamos el formulario de login por defecto
-                .httpBasic(basic -> basic.disable()) // Deshabilitamos la autenticación básica HTTP por defecto
-                .logout(logout -> logout.permitAll()) // Permitimos acceso al logout sin autenticación
-                .authenticationProvider(authenticationProvider());
+            .cors().disable()
+            .csrf().disable()
+            .authorizeHttpRequests()
+                .anyRequest().permitAll()
+            .and()
+            .authenticationProvider(authenticationProvider());
 
         return http.build();
     }

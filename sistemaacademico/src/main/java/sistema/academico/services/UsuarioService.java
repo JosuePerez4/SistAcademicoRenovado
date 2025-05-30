@@ -64,10 +64,15 @@ public class UsuarioService {
     public LoginResponse iniciarSesion(String correo, String contrasena) {
         Usuario usuario = usuarioRepository.findByCorreo(correo);
         if (usuario != null && usuario.getContrasena().equals(contrasena) && usuario.isEstado()) {
-            return new LoginResponse(usuario.getNombre()+usuario.getApellido(),usuario.getCorreo(), usuario.getRoles().stream()
+            return new LoginResponse(
+                usuario.getId(),
+                usuario.getNombre() + usuario.getApellido(),
+                usuario.getCorreo(), 
+                usuario.getRoles().stream()
                     .map(rol -> rol.getNombre())
                     .findFirst()
-                    .orElse("Usuario"));
+                    .orElse("Usuario")
+            );
         }
         return null;
     }

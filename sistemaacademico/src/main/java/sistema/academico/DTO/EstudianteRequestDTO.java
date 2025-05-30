@@ -20,7 +20,6 @@ public class EstudianteRequestDTO {
     private String rol;
     private double promedio;
     private boolean beca;
-    private LocalDate fechaIngreso;
     private LocalDate fechaEgreso;
     private Long programaAcademicoId;
 }

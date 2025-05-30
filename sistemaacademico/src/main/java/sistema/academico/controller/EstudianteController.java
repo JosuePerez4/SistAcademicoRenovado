@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,7 +77,7 @@ public class EstudianteController {
         estudiante.setRoles(roles);
         estudiante.setPromedio(dto.getPromedio());
         estudiante.setBeca(dto.isBeca());
-        estudiante.setFechaIngreso(dto.getFechaIngreso());
+        estudiante.setFechaIngreso(LocalDate.now());
         estudiante.setFechaEgreso(dto.getFechaEgreso());
         estudiante.setProgramaAcademico(programa);
 
@@ -91,6 +92,10 @@ public class EstudianteController {
         Estudiante estudianteEncontrao = estudianteService.buscarPorCodigo(codigo);
 
         if (estudianteEncontrao != null) {
+            // Guardamos la contraseña actual
+            String contrasenaActual = estudianteEncontrao.getContrasena();
+            
+            // Actualizamos los demás campos
             estudianteEncontrao.setNombre(estudianteActualizado.getNombre());
             estudianteEncontrao.setApellido(estudianteActualizado.getApellido());
             estudianteEncontrao.setDireccion(estudianteActualizado.getDireccion());
@@ -99,8 +104,11 @@ public class EstudianteController {
             estudianteEncontrao.setEstado(estudianteActualizado.isEstado());
             estudianteEncontrao.setBeca(estudianteActualizado.isBeca());
             estudianteEncontrao.setFechaEgreso(estudianteActualizado.getFechaEgreso());
+            
+            // Restauramos la contraseña original
+            estudianteEncontrao.setContrasena(contrasenaActual);
 
-            Estudiante actualizado = estudianteService.registrarEstudiante(estudianteEncontrao);
+            Estudiante actualizado = estudianteService.actualizarEstudiante(estudianteEncontrao);
 
             return ResponseEntity.ok(actualizado);
         }
@@ -181,6 +189,34 @@ public class EstudianteController {
         }
 
         return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/codigo/{codigo}")
+    public ResponseEntity<EstudianteResponseDTO> buscarPorCodigo(@PathVariable String codigo) {
+        Estudiante estudiante = estudianteService.buscarPorCodigo(codigo);
+        
+        if (estudiante != null) {
+            EstudianteResponseDTO dto = new EstudianteResponseDTO();
+            dto.setId(estudiante.getId());
+            dto.setCedula(estudiante.getCedula());
+            dto.setNombre(estudiante.getNombre());
+            dto.setApellido(estudiante.getApellido());
+            dto.setDireccion(estudiante.getDireccion());
+            dto.setCorreo(estudiante.getCorreo());
+            dto.setTelefono(estudiante.getTelefono());
+            dto.setGenero(estudiante.getGenero());
+            dto.setFechaNacimiento(estudiante.getFechaNacimiento().toString());
+            dto.setCodigo(estudiante.getCodigo());
+            dto.setEstado(estudiante.isEstado());
+            dto.setPromedio(estudiante.getPromedio());
+            dto.setBeca(estudiante.isBeca());
+            dto.setFechaIngreso(estudiante.getFechaIngreso().toString());
+            dto.setFechaEgreso(estudiante.getFechaEgreso() != null ? estudiante.getFechaEgreso().toString() : null);
+
+            return ResponseEntity.ok(dto);
+        }
+        
+        return ResponseEntity.notFound().build();
     }
 
 }

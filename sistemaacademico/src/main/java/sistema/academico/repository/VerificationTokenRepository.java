@@ -4,7 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import sistema.academico.entities.Usuario;
 import sistema.academico.entities.VerificationToken;
 
+import java.util.Optional;
+
 public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
-    VerificationToken findByToken(String token);
-    VerificationToken findByUsuario(Usuario usuario);
+    Optional<VerificationToken> findByToken(String token);
+    Optional<VerificationToken> findByUsuario(Usuario usuario);
 }

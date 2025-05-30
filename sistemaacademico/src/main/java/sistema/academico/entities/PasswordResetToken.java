@@ -1,9 +1,15 @@
 package sistema.academico.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "password_reset_token")
 public class PasswordResetToken {
     @Id
@@ -16,12 +22,11 @@ public class PasswordResetToken {
     @JoinColumn(nullable = false, name = "usuario_id")
     private Usuario usuario;
 
+    @Column(name = "expiry_date", nullable = false)
     private LocalDateTime fechaExpiracion;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean usado;
-
-    public PasswordResetToken() {
-    }
 
     public PasswordResetToken(String token, Usuario usuario) {
         this.token = token;
@@ -30,45 +35,11 @@ public class PasswordResetToken {
         this.usado = false;
     }
 
-    // Getters y Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
+    public PasswordResetToken(Usuario usuario) {
+        this.token = java.util.UUID.randomUUID().toString();
         this.usuario = usuario;
-    }
-
-    public LocalDateTime getFechaExpiracion() {
-        return fechaExpiracion;
-    }
-
-    public void setFechaExpiracion(LocalDateTime fechaExpiracion) {
-        this.fechaExpiracion = fechaExpiracion;
-    }
-
-    public boolean isUsado() {
-        return usado;
-    }
-
-    public void setUsado(boolean usado) {
-        this.usado = usado;
+        this.fechaExpiracion = LocalDateTime.now().plusHours(24);
+        this.usado = false;
     }
 
     public boolean isTokenValido() {

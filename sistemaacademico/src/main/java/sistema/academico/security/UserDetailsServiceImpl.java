@@ -40,20 +40,25 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 + ", Roles: " + usuario.getRoles());
 
         if (!usuario.isEstado()) {
-            VerificationToken verificationToken = verificationTokenRepository.findByUsuario(usuario);
-            if (verificationToken == null) {
-                verificationToken = new VerificationToken(usuario);
-                verificationTokenRepository.save(verificationToken);
-                String verificationLink = "http://tu-aplicacion.com/verify-email?token=" + verificationToken.getToken();
-                String mensaje = "Hola " + usuario.getNombre() + ",\n\n" +
-                        "Gracias por registrarte. Por favor, haz clic en el siguiente enlace para verificar tu correo electrónico:\n"
-                        +
-                        verificationLink + "\n\n" +
-                        "Este enlace expirará en 24 horas.\n\n" +
-                        "Si no te registraste, puedes ignorar este correo.";
-                System.out.println("Simulando envío de correo electrónico de verificación a: " + usuario.getCorreo()
-                        + "\nContenido:\n" + mensaje);
-            }
+            VerificationToken verificationToken = verificationTokenRepository.findByUsuario(usuario)
+                .orElseGet(() -> {
+                    VerificationToken newToken = new VerificationToken(usuario);
+                    return verificationTokenRepository.save(newToken);
+                });
+
+            String verificationLink = "http://localhost:8080/verify-email?token=" + verificationToken.getToken();
+            String mensaje = String.format(
+                "Hola %s,\n\n" +
+                "Gracias por registrarte. Por favor, haz clic en el siguiente enlace para verificar tu correo electrónico:\n" +
+                "%s\n\n" +
+                "Este enlace expirará en 24 horas.\n\n" +
+                "Si no te registraste, puedes ignorar este correo.",
+                usuario.getNombre(),
+                verificationLink
+            );
+            System.out.println("Simulando envío de correo electrónico de verificación a: " + usuario.getCorreo()
+                    + "\nContenido:\n" + mensaje);
+            
             throw new IllegalStateException(
                     "Su cuenta aún no ha sido verificada. Por favor, revise su correo electrónico.");
         }
@@ -61,11 +66,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         for (Rol rol : usuario.getRoles()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + rol.getNombre()));
-            // Si implementas permisos directamente como authorities, podrías iterar también
-            // sobre rol.getPermisos() aquí.
         }
         System.out.println("Authorities cargadas: " + authorities);
 
-        return new User(usuario.getCorreo(), usuario.getContrasena(), authorities);
+        // Devolver el UserDetails con la contraseña encriptada
+        return User.builder()
+            .username(usuario.getCorreo())
+            .password(usuario.getContrasena()) // Ya está encriptada en la base de datos
+            .authorities(authorities)
+            .accountExpired(false)
+            .accountLocked(false)
+            .credentialsExpired(false)
+            .disabled(!usuario.isEstado())
+            .build();
     }
 }

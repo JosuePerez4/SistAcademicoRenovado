@@ -45,8 +45,10 @@ public class Usuario {
     private String contrasena;
     private boolean estado;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "rol_id"))
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "usuario_rol", 
+               joinColumns = @JoinColumn(name = "usuario_id"), 
+               inverseJoinColumns = @JoinColumn(name = "rol_id"))
     private Set<Rol> roles = new HashSet<>();
 
     // Métodos auxiliares para gestionar los roles

@@ -134,7 +134,7 @@ public class NotificacionService {
     }
 
     // Método auxiliar para enviar el correo
-    private void enviarCorreo(String destinatario, String asunto, String mensaje) {
+    public void enviarCorreo(String destinatario, String asunto, String mensaje) {
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(destinatario);
         email.setSubject(asunto);

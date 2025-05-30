@@ -20,6 +20,11 @@ public class EstudianteService {
         return estudianteRepository.save(estudiante);
     }
 
+    // Actualizar un estudiante existente
+    public Estudiante actualizarEstudiante(Estudiante estudiante) {
+        return estudianteRepository.save(estudiante);
+    }
+
     // Actualizar un estudiante
     public Estudiante actualizarEstudiante(String codigo, Estudiante estudianteActualizado) {
         Optional<Estudiante> optionalEStudiante = estudianteRepository.findByCodigo(codigo);
@@ -61,9 +66,6 @@ public class EstudianteService {
     // Buscar el estudiante por su código
     public Estudiante buscarPorCodigo(String codigo) {
         Optional<Estudiante> estudiante = estudianteRepository.findByCodigo(codigo);
-
-        Estudiante estudianteEncontrao = estudiante.get();
-
-        return estudianteEncontrao;
+        return estudiante.orElse(null);
     }
 }

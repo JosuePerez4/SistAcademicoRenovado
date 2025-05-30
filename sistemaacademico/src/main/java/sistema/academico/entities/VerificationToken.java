@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -27,20 +25,17 @@ public class VerificationToken {
     private Usuario usuario;
 
     @Column(nullable = false)
-    private Date expiryDate;
+    private LocalDateTime fechaExpiracion;
 
-    private static final int EXPIRATION = 60 * 24; // 24 horas
+    private static final int EXPIRATION = 24; // 24 horas
 
     public VerificationToken(Usuario usuario) {
         this.usuario = usuario;
-        this.token = UUID.randomUUID().toString();
-        this.expiryDate = calculateExpiryDate(EXPIRATION);
+        this.token = java.util.UUID.randomUUID().toString();
+        this.fechaExpiracion = calculateExpiryDate();
     }
 
-    private Date calculateExpiryDate(int expiryTimeInMinutes) {
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.setTime(new java.sql.Timestamp(cal.getTime().getTime()));
-        cal.add(java.util.Calendar.MINUTE, expiryTimeInMinutes);
-        return new Date(cal.getTime().getTime());
+    private LocalDateTime calculateExpiryDate() {
+        return LocalDateTime.now().plusHours(EXPIRATION);
     }
 }
